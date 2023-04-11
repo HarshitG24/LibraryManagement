@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Main-Class: com.example.distributedsystems.distributed.systems.Distribut
+ edSystemsApplication
+Class-Path: swagger-models-1.5.20.jar spring-boot-starter-logging-3.0.5.
+ jar spring-core-6.0.7.jar jakarta.activation-api-2.1.1.jar antlr4-runti
+ me-4.10.1.jar spring-aop-6.0.7.jar spring-boot-starter-aop-3.0.5.jar lo
+ g4j-api-2.19.0.jar spring-plugin-core-1.2.0.RELEASE.jar jboss-logging-3
+ .5.0.Final.jar guava-20.0.jar springfox-spi-2.9.2.jar springfox-swagger
+ -ui-2.9.2.jar spring-boot-autoconfigure-3.0.5.jar slf4j-api-2.0.7.jar s
+ wagger-annotations-1.5.20.jar hibernate-commons-annotations-6.0.6.Final
+ .jar spring-orm-6.0.7.jar springfox-bean-validators-2.9.2.jar spring-jd
+ bc-6.0.7.jar jakarta.transaction-api-2.0.1.jar micrometer-observation-1
+ .10.5.jar classmate-1.5.1.jar jandex-2.4.2.Final.jar jaxb-runtime-4.0.2
+ .jar logback-classic-1.4.6.jar jackson-databind-2.14.2.jar mapstruct-1.
+ 2.0.Final.jar spring-tx-6.0.7.jar hibernate-core-6.1.7.Final.jar tomcat
+ -embed-core-10.1.7.jar spring-plugin-metadata-1.2.0.RELEASE.jar springf
+ ox-schema-2.9.2.jar spring-data-commons-3.0.4.jar HikariCP-5.0.1.jar to
+ mcat-embed-el-10.1.7.jar jaxb-core-4.0.2.jar istack-commons-runtime-4.1
+ .1.jar jackson-core-2.14.2.jar spring-aspects-6.0.7.jar angus-activatio
+ n-2.0.0.jar springfox-spring-web-2.9.2.jar aspectjweaver-1.9.19.jar spr
+ ing-beans-6.0.7.jar springfox-swagger2-2.9.2.jar spring-expression-6.0.
+ 7.jar jackson-module-parameter-names-2.14.2.jar spring-boot-starter-3.0
+ .5.jar jul-to-slf4j-2.0.7.jar jackson-annotations-2.14.2.jar spring-boo
+ t-starter-data-jpa-3.0.5.jar log4j-to-slf4j-2.19.0.jar spring-boot-star
+ ter-jdbc-3.0.5.jar springfox-swagger-common-2.9.2.jar logback-core-1.4.
+ 6.jar spring-boot-starter-json-3.0.5.jar spring-web-6.0.7.jar spring-we
+ bmvc-6.0.7.jar jackson-datatype-jdk8-2.14.2.jar tomcat-embed-websocket-
+ 10.1.7.jar jakarta.annotation-api-2.1.1.jar jakarta.xml.bind-api-4.0.0.
+ jar txw2-4.0.2.jar snakeyaml-1.33.jar h2-2.1.214.jar jackson-datatype-j
+ sr310-2.14.2.jar byte-buddy-1.12.23.jar jakarta.persistence-api-3.1.0.j
+ ar spring-data-jpa-3.0.4.jar spring-boot-starter-tomcat-3.0.5.jar micro
+ meter-commons-1.10.5.jar spring-jcl-6.0.7.jar spring-boot-3.0.5.jar spr
+ ingfox-core-2.9.2.jar jakarta.inject-api-2.0.0.jar spring-context-6.0.7
+ .jar spring-boot-starter-web-3.0.5.jar
+
