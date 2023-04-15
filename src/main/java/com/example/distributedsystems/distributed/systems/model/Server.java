@@ -16,8 +16,7 @@ public class Server {
     public Server() {
     }
 
-    public Server(int id, int port) {
-        Id = id;
+    public Server(int port) {
         this.port = port;
     }
 

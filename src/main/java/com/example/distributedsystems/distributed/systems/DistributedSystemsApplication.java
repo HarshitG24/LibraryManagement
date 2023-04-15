@@ -1,6 +1,7 @@
 package com.example.distributedsystems.distributed.systems;
 
 import com.example.distributedsystems.distributed.systems.model.Employee;
+import com.example.distributedsystems.distributed.systems.model.Server;
 import com.example.distributedsystems.distributed.systems.repository.EmployeeInterface;
 import com.example.distributedsystems.distributed.systems.repository.ServerInterface;
 import org.springframework.boot.CommandLineRunner;
@@ -20,6 +21,10 @@ public class DistributedSystemsApplication {
 		return(args -> {
 //				insertEmployee(ei);
 			System.out.println("server: " + si.findAll());
+			si.save(new Server(2000));
+			si.save(new Server(2001));
+			si.save(new Server(2002));
+			si.save(new Server(2003));
 		});
 	}
 
