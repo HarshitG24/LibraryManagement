@@ -4,6 +4,7 @@ import com.example.distributedsystems.distributed.systems.model.Employee;
 import com.example.distributedsystems.distributed.systems.model.Server;
 import com.example.distributedsystems.distributed.systems.repository.EmployeeInterface;
 import com.example.distributedsystems.distributed.systems.repository.ServerInterface;
+import com.example.distributedsystems.distributed.systems.repository.UserInterface;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +18,7 @@ public class DistributedSystemsApplication {
 	}
 
 	@Bean
-	public CommandLineRunner run(EmployeeInterface ei, ServerInterface si){
+	public CommandLineRunner run(EmployeeInterface ei, ServerInterface si, UserInterface ui){
 		return(args -> {
 //				insertEmployee(ei);
 			System.out.println("server: " + si.findAll());
