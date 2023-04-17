@@ -14,19 +14,19 @@ public class BookService {
   @Autowired
   private BookInterface bookInterface;
 
-  public List<Book> getAllBooks(){
+  public List<Book> getAllBooks() {
     return (List<Book>) bookInterface.findAll();
   }
 
-  public void createBook(Book e){
+  public void createBook(Book e) {
     bookInterface.save(e);
   }
 
-  public Book getBookByIsbn(Long isbn){
+  public Book getBookByIsbn(Long isbn) {
     return bookInterface.getBookByIsbn(isbn);
   }
 
-  public void deleteBookByIsbn(Long isbn){
+  public void deleteBookByIsbn(Long isbn) {
     bookInterface.deleteAllByIsbn(isbn);
   }
 
