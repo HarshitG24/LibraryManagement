@@ -1,16 +1,16 @@
 package com.example.distributedsystems.distributed.systems.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Query;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,27 +21,30 @@ public class Transaction {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long transactionId;
   private Long userId;
-  @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
-  private List<BookLoan> bookLoans;
 
-  public Transaction(Long userId, List<Long> bookIds) {
+  @ElementCollection
+  private Map<Long, Boolean> bookStatus = new HashMap<>();
+
+  public Transaction(Long userId, List<Long> bookLoanIds) {
     this.userId = userId;
-    this.bookLoans = new ArrayList<>();
-    for (Long bookId : bookIds) {
-      this.bookLoans.add(new BookLoan(this.transactionId, bookId));
+    for (Long bookId: bookLoanIds) {
+      this.bookStatus.put(bookId, false);
     }
   }
 
   public Transaction() {
-
   }
 
-  public List<BookLoan> getBookLoans() {
-    return bookLoans;
+  public List<Long> getBookLoans() {
+    return new ArrayList<>(bookStatus.keySet());
   }
 
-  public void setBookLoans(List<BookLoan> bookLoans) {
-    this.bookLoans = bookLoans;
+  public Map<Long, Boolean> getBookStatus() {
+    return new HashMap<>(bookStatus);
+  }
+
+  public void updateBookStatus(Long bookID) {
+    this.bookStatus.put(bookID, true);
   }
 
   public Long getTransactionId() {
@@ -60,19 +63,24 @@ public class Transaction {
     this.userId = userId;
   }
 
-  public List<Long> getUnreturnedBookIds(EntityManager entityManager) {
-    Query query = entityManager.createQuery("SELECT bl.bookId FROM BookLoan bl WHERE bl.transactionId = :transactionId AND bl.returned = false");
-    query.setParameter("transactionId", transactionId);
-    List<Long> bookIds = query.getResultList();
-    return new ArrayList<>(bookIds);
+  public List<Long> getAllUnreturnedBooks() {
+    List<Long> unreturnedBookIds = new ArrayList<>();
+    for (Map.Entry<Long, Boolean> entry : bookStatus.entrySet()) {
+      Long bookId = entry.getKey();
+      if (!entry.getValue()) {
+        unreturnedBookIds.add(bookId);
+      }
+    }
+    return unreturnedBookIds;
   }
+
 
   @Override
   public String toString() {
     return "Transaction{" +
             "transactionId=" + transactionId +
             ", userId=" + userId +
-            ", bookLoans=" + bookLoans +
+            ", bookStatus=" + bookStatus +
             '}';
   }
 }
