@@ -18,6 +18,10 @@ public class Cart {
         this.username = username;
     }
 
+    public Cart() {
+
+    }
+
     public long getIsbn() {
         return isbn;
     }
