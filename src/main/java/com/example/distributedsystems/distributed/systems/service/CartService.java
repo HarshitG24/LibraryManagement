@@ -21,4 +21,8 @@ public class CartService {
     public List<Cart> deleteCartForUser(String user) {
         return cartInterface.deleteCartByUsername(user);
     }
+
+    public void deleteCartByUserAndIsbn(String user, Long isbn){
+        cartInterface.deleteCartByUsernameAndIsbn(user, isbn);
+    }
 }
