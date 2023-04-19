@@ -1,6 +1,7 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
 
+import com.example.distributedsystems.distributed.systems.model.CreateUserRequest;
 import com.example.distributedsystems.distributed.systems.model.User;
 import com.example.distributedsystems.distributed.systems.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})
@@ -19,25 +19,27 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/getUserByEmail")
-    public ResponseEntity<User> getUserByEmail(@RequestBody String... data) {
-        User user = userService.getUserByEmailAndPassword(data[0],data[1]);
+    @GetMapping("/authenticate")
+    public ResponseEntity<User> getUserByUsernameAnsPassword(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        String password = request.get("password");
+        User user = userService.getUserByUsernameAndPassword(username, password);
         System.out.println("users:" + user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping("/getUserbyUserId")
-    public ResponseEntity<User> getUserByUserId(@RequestBody Long user_id) {
-        User user = userService.getUserbyUserId(user_id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getUserByUserId(@PathVariable Long userId) {
+        User user = userService.getUserbyUserId(userId);
         System.out.println("users:" + user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PostMapping("/createUser")
-    public ResponseEntity<Object> createUser(@RequestBody User user) {
+    @PostMapping("/")
+    public ResponseEntity<Object> createUser(@RequestBody CreateUserRequest request) {
+        User.Address address = new User.Address(request.getAddress1(), request.getAddress2(), request.getCity(), request.getState(), request.getZipcode());
+        User user = new User(request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword(), request.getUsername(), request.getPhone(), address);
         userService.createUser(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-
 }

@@ -1,107 +1,196 @@
 package com.example.distributedsystems.distributed.systems.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name="User")
+@Table(name = "users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long userId;
+  private String firstName;
+  private String lastName;
+  private String email;
+  private String username;
+  private String password;
+  private String phone;
 
-    private String firstName;
+  @Embedded
+  private Address address;
 
-    private String lastName;
+  public User() {
+  }
 
+  public User(String firstName, String lastName, String email, String password, String username,
+              String phone, Address address) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.password = password;
+    this.username = username;
+    this.phone = phone;
+    this.address = address;
+  }
 
-    private String email;
+  public String getUsername() {
+    return username;
+  }
 
-    private String password;
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    private String phone;
+  public String getFirstName() {
 
-    @Embedded
-    private Address address;
+    return firstName;
+  }
 
-    public User() {
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public String getLastName() {
+
+    return lastName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  public String getEmail() {
+
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public Long getUserId() {
+    return userId;
+  }
+
+  public void setUserId(Long userId) {
+    this.userId = userId;
+  }
+
+  public Address getAddress() {
+    return address;
+  }
+
+  public void setAddress(Address address) {
+    this.address = address;
+  }
+
+  public String getPassword() {
+
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public String getPhone() {
+
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
+
+  @Override
+  public String toString() {
+    return "User{" +
+            "userId=" + userId +
+            ", firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", email='" + email + '\'' +
+            ", username='" + username + '\'' +
+            ", password='" + password + '\'' +
+            ", phone='" + phone + '\'' +
+            ", address=" + address +
+            '}';
+  }
+
+  @Embeddable
+  public static class Address {
+    private String address1;
+    private String address2;
+    private String city;
+    private String state;
+    private String zipcode;
+
+    public Address(String address1, String address2, String city, String state, String zipcode) {
+      this.address1 = address1;
+      this.address2 = address2;
+      this.city = city;
+      this.state = state;
+      this.zipcode = zipcode;
     }
 
-    public User(String... data)
-    {
-        this.firstName = data[0];
-        this.lastName = data[1];
-        this.email = data[2];
-        this.password = data[3];
-        this.phone = data[4];
-        this.address.address1 = data[5];
-        this.address.address2 = data[6];
-        this.address.city = data[7];
-        this.address.state = data[8];
-        this.address.zipcode = data[9];
+    public Address() {
+
     }
 
-    @Embeddable
-    public static class Address {
-
-
-        private String address1;
-
-        private String address2;
-
-
-        private String city;
-
-
-        private String state;
-
-
-        private String zipcode;
+    public String getAddress1() {
+      return address1;
     }
 
-    public Long getId() {
-        return userId;
+    public void setAddress1(String address1) {
+      this.address1 = address1;
     }
 
-    public void setId(long id) {
-
-       userId =  id;
+    public String getAddress2() {
+      return address2;
     }
 
-    public String getFirstName() {
-
-        return firstName;
+    public void setAddress2(String address2) {
+      this.address2 = address2;
     }
 
-    public String getLastName() {
-
-        return lastName;
+    public String getCity() {
+      return city;
     }
 
-    public String getEmail() {
-
-        return email;
+    public void setCity(String city) {
+      this.city = city;
     }
 
-    public String getPassword() {
-
-        return password;
+    public String getState() {
+      return state;
     }
 
-    public String getPhone() {
+    public void setState(String state) {
+      this.state = state;
+    }
 
-        return phone;
+    public String getZipcode() {
+      return zipcode;
+    }
+
+    public void setZipcode(String zipcode) {
+      this.zipcode = zipcode;
     }
 
     @Override
     public String toString() {
-        return "User{" +
-                "userId=" + userId + '\'' +
-                "username=" + firstName + ' '+ lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address=" + address.address1 + ' ' +address.address2 + ' ' + address.city + ' '+ address.state + ' '+ address.zipcode + '\''+
-                '}';
+      return "Address{" +
+              "address1='" + address1 + '\'' +
+              ", address2='" + address2 + '\'' +
+              ", city='" + city + '\'' +
+              ", state='" + state + '\'' +
+              ", zipcode='" + zipcode + '\'' +
+              '}';
     }
+  }
 }

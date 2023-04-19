@@ -6,21 +6,26 @@ import com.example.distributedsystems.distributed.systems.repository.UserInterfa
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 @Service
 public class UserService {
     @Autowired
     private UserInterface userInterface;
 
-    public User getUserbyUserId(Long user_id) {
-        return  userInterface.getUserByUserId(user_id);
+    public User getUserbyUserId(Long userId) {
+        return  userInterface.getUserByUserId(userId);
     }
 
-    public void createUser(User e) {
-        userInterface.save(e);
+    public void createUser(User user) {
+        if (userInterface.findByEmail(user.getEmail()) != null) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+        if (userInterface.findByUsername(user.getUsername()) != null) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        userInterface.save(user);
     }
 
-    public User getUserByEmailAndPassword(String email, String password) {
-        return userInterface.getUserByEmailAndPassword(email,password);
+    public User getUserByUsernameAndPassword(String username, String password) {
+        return userInterface.getUserByUsernameAndPassword(username,password);
     }
 }
