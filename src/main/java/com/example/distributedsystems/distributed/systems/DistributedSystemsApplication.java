@@ -23,11 +23,16 @@ public class DistributedSystemsApplication {
 	public CommandLineRunner run(EmployeeInterface ei, ServerInterface si, UserInterface ui){
 		return(args -> {
 //				insertEmployee(ei);
-      System.out.println("server: " + si.findAll());
-      si.save(new Server(2000));
-      si.save(new Server(2001));
-      si.save(new Server(2002));
-      si.save(new Server(2003));
+            si.deleteAll();
+            si.save(new Server(8081));
+            si.save(new Server(8082));
+            si.save(new Server(8083));
+            si.save(new Server(8084));
+            si.save(new Server(8085));
+//      si.save(new Server(2000));
+//      si.save(new Server(2001));
+//      si.save(new Server(2002));
+//      si.save(new Server(2003));
     });
   }
 
