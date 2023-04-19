@@ -6,20 +6,21 @@ import com.example.distributedsystems.distributed.systems.repository.UserInterfa
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 @Service
 public class UserService {
-  @Autowired
-  private UserInterface userInterface;
+    @Autowired
+    private UserInterface userInterface;
 
-  public User getUserByUserId(Long user_id) {
-    return  userInterface.getUserByUserId(user_id);
-  }
+    public User getUserbyUserId(Long user_id) {
+        return  userInterface.getUserByUserId(user_id);
+    }
 
-  public void createUser(User e) {
-    userInterface.save(e);
-  }
+    public void createUser(User e) {
+        userInterface.save(e);
+    }
 
-  public User getUserByEmailAndPassword(String email, String password) {
-    return userInterface.getUserByEmailAndPassword(email,password);
-  }
+    public User getUserByEmailAndPassword(String email, String password) {
+        return userInterface.getUserByEmailAndPassword(email,password);
+    }
 }

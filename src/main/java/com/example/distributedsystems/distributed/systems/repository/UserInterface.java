@@ -11,10 +11,6 @@ import java.util.List;
 
 @Repository
 public interface UserInterface extends CrudRepository<User, Long> {
-  User getUserByEmailAndPassword(String email, String password);
-  User getUserByUserId(Long id);
-
-
-
-
+    User getUserByEmailAndPassword(String email, String password);
+    User getUserByUserId(Long id);
 }
