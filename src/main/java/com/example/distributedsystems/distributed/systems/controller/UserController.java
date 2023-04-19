@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})
 @RequestMapping("/user")
@@ -20,9 +18,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/authenticate")
-    public ResponseEntity<User> getUserByUsernameAnsPassword(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
-        String password = request.get("password");
+    public ResponseEntity<User> getUserByUsernameAnsPassword(@RequestParam String username, @RequestParam String password) {
+        System.out.println(username);
         User user = userService.getUserByUsernameAndPassword(username, password);
         System.out.println("users:" + user);
         return new ResponseEntity<>(user, HttpStatus.OK);
@@ -35,7 +32,7 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<Object> createUser(@RequestBody CreateUserRequest request) {
         User.Address address = new User.Address(request.getAddress1(), request.getAddress2(), request.getCity(), request.getState(), request.getZipcode());
         User user = new User(request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword(), request.getUsername(), request.getPhone(), address);

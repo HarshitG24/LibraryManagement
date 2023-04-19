@@ -33,6 +33,13 @@ public class BookController {
     return new ResponseEntity<>(books, HttpStatus.OK);
   }
 
+  @GetMapping("/{isbn}")
+  public ResponseEntity<Book> getBookByIsbn(@PathVariable("isbn") Long isbn) {
+    Book book = bookService.getBookByIsbn(isbn);
+    System.out.println("Book:" + book);
+    return new ResponseEntity<>(book, HttpStatus.OK);
+  }
+
   @PostMapping("/")
   public ResponseEntity<Object> createBook(@RequestBody Book book) {
     bookService.createBook(book);
