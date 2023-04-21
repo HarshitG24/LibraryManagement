@@ -29,6 +29,7 @@ public class TwoPCController {
     private ServerProperties serverProperties;
 
     public  ResponseEntity<Object> performTransaction(User emp) {
+        System.out.println("entered user is: " + emp);
         try{
             List<Integer> allPorts = new ArrayList<>();
 
@@ -80,7 +81,7 @@ public class TwoPCController {
                 Integer p = allPorts.get(i);
 
                 executor.execute(() -> {
-                    boolean acks = (boolean) restService.post(restService.generateURL("localhost", p, "server","docommit"), null).getBody();
+                    boolean acks = (boolean) restService.post(restService.generateURL("localhost", p, "server","docommit"), emp).getBody();
 
                     if(acks){
                         System.out.println("saved data on port: " + p);

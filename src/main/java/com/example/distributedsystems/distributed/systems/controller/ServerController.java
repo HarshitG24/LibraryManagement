@@ -52,9 +52,10 @@ public class ServerController {
 
     // refactor
     @PostMapping("/docommit")
-    public ResponseEntity<Boolean> doCommit() {
+    public ResponseEntity<Boolean> doCommit(@RequestBody User user) {
 //        employeeService.createEmployee(new Employee("harshit", "mihir"));
-        userService.createUser(new User("fn", "ln", "qaz@eec.com", "p", "john", "7899", new User.Address("600", "california", "San Francisco", "CA", "94108")));
+//        userService.createUser(new User("fn", "ln", "qaz@eec.com", "p", "john", "7899", new User.Address("600", "california", "San Francisco", "CA", "94108")));
+        userService.createUser(user);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 }
