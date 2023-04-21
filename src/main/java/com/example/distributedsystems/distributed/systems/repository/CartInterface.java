@@ -12,10 +12,15 @@ import java.util.List;
 
 @Repository
 public interface CartInterface extends CrudRepository<Cart, Integer> {
-    List<Cart> getCartByUsername(String username);
-    List<Cart> deleteCartByUsername(String username);
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Cart c WHERE c.isbn = :isbn AND c.username = :username")
-    void deleteCartByUsernameAndIsbn(String username, Long isbn);
+    Cart getCartByUsername(String username);
+    Cart deleteCartByUsername(String username);
+
+//    Cart updateBooksByUsername(Cart c);
+
+//    @Modifying
+//    @Transactional
+//    @Query("DELETE FROM Cart c WHERE c.isbn = :isbn AND c.username = :username")
+//    void deleteCartByUsernameAndIsbn(String username, Long isbn);
+
+//    void deleteBookInCartByUsername(String username, Long isbn);
 }
