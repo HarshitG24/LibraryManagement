@@ -55,6 +55,12 @@ public class TransactionController {
     return new ResponseEntity<>(unreturnedBookIds, HttpStatus.OK);
   }
 
+  @GetMapping("/returned/{userId}")
+  public ResponseEntity<List<Long>> getAllReturnedBooksByUserId(@PathVariable Long userId) {
+    List<Long> returnedBookIds = transactionService.getAllReturnedBooksByUserId(userId);
+    return new ResponseEntity<>(returnedBookIds, HttpStatus.OK);
+  }
+
   @GetMapping("/userId/{userId}")
   public ResponseEntity<List<Transaction>> getAllTransactionByUserId(@PathVariable Long userId) {
     List<Transaction> transactions = transactionService.getAllTransactionsByUserId(userId);
