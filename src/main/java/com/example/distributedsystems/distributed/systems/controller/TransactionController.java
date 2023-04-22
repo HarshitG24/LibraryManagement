@@ -35,7 +35,7 @@ public class TransactionController {
     return new ResponseEntity<>(transactions, HttpStatus.OK);
   }
 
-  @PostMapping("/")
+  @PostMapping("/createTransaction")
   public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequest transactionRequest) {
     Transaction transaction = new Transaction(transactionRequest.getUserId(), transactionRequest.getBookIds());
     Transaction savedTransaction = transactionService.createTransaction(transaction);

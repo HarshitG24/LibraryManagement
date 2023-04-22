@@ -40,7 +40,7 @@ public class BookController {
     return new ResponseEntity<>(book, HttpStatus.OK);
   }
 
-  @PostMapping("/")
+  @PostMapping("/createBook")
   public ResponseEntity<Object> createBook(@RequestBody Book book) {
     bookService.createBook(book);
     return new ResponseEntity<>(HttpStatus.OK);
