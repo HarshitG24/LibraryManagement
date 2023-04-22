@@ -1,10 +1,8 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.twopc;
 
 import com.example.distributedsystems.distributed.systems.coordinator.RestService;
-import com.example.distributedsystems.distributed.systems.model.Employee;
-import com.example.distributedsystems.distributed.systems.model.User;
+import com.example.distributedsystems.distributed.systems.model.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,7 +11,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Controller
 public class TwoPCController {

@@ -1,4 +1,4 @@
-package com.example.distributedsystems.distributed.systems.model;
+package com.example.distributedsystems.distributed.systems.model.user;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;

@@ -1,15 +1,12 @@
 package com.example.distributedsystems.distributed.systems.repository;
 
-import com.example.distributedsystems.distributed.systems.model.Book;
-import com.example.distributedsystems.distributed.systems.model.Cart;
+import com.example.distributedsystems.distributed.systems.model.cart.Cart;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface CartInterface extends CrudRepository<Cart, Integer> {
@@ -20,7 +17,7 @@ public interface CartInterface extends CrudRepository<Cart, Integer> {
     @Query("DELETE FROM Cart c WHERE c.username = :username")
     void deleteCartByUsername(@Param("username") String username);
 
-    List<Cart> findByUsername(String username);
+    Cart findByUsername(String username);
 
 //    Cart updateBooksByUsername(Cart c);
 

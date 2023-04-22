@@ -1,6 +1,6 @@
 package com.example.distributedsystems.distributed.systems.service;
 
-import com.example.distributedsystems.distributed.systems.model.User;
+import com.example.distributedsystems.distributed.systems.model.user.User;
 import com.example.distributedsystems.distributed.systems.repository.UserInterface;
 
 import org.springframework.beans.factory.annotation.Autowired;

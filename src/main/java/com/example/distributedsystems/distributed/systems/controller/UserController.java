@@ -2,9 +2,8 @@ package com.example.distributedsystems.distributed.systems.controller;
 
 
 import com.example.distributedsystems.distributed.systems.dsalgo.twopc.TwoPCController;
-import com.example.distributedsystems.distributed.systems.model.CreateUserRequest;
-import com.example.distributedsystems.distributed.systems.model.Employee;
-import com.example.distributedsystems.distributed.systems.model.User;
+import com.example.distributedsystems.distributed.systems.model.user.CreateUserRequest;
+import com.example.distributedsystems.distributed.systems.model.user.User;
 import com.example.distributedsystems.distributed.systems.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

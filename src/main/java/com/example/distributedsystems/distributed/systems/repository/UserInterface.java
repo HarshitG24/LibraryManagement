@@ -1,6 +1,6 @@
 package com.example.distributedsystems.distributed.systems.repository;
 
-import com.example.distributedsystems.distributed.systems.model.User;
+import com.example.distributedsystems.distributed.systems.model.user.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

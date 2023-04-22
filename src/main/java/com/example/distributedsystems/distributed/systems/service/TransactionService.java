@@ -1,6 +1,6 @@
 package com.example.distributedsystems.distributed.systems.service;
 
-import com.example.distributedsystems.distributed.systems.model.Transaction;
+import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import com.example.distributedsystems.distributed.systems.repository.TransactionInterface;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.example.distributedsystems.distributed.systems.model;
+package com.example.distributedsystems.distributed.systems.model.transaction;
 
 import java.util.ArrayList;
 import java.util.HashMap;

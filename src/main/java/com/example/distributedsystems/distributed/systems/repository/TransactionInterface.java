@@ -1,6 +1,6 @@
 package com.example.distributedsystems.distributed.systems.repository;
 
-import com.example.distributedsystems.distributed.systems.model.Transaction;
+import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.CrudRepository;

@@ -1,9 +1,7 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
-import com.example.distributedsystems.distributed.systems.dsalgo.twopc.TwoPCController;
-import com.example.distributedsystems.distributed.systems.model.Employee;
 import com.example.distributedsystems.distributed.systems.model.Server;
-import com.example.distributedsystems.distributed.systems.model.User;
+import com.example.distributedsystems.distributed.systems.model.user.User;
 import com.example.distributedsystems.distributed.systems.service.EmployeeService;
 import com.example.distributedsystems.distributed.systems.service.ServerService;
 import com.example.distributedsystems.distributed.systems.service.UserService;
@@ -13,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})

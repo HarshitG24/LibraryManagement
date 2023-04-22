@@ -1,9 +1,10 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
 import com.example.distributedsystems.distributed.systems.model.Book;
-import com.example.distributedsystems.distributed.systems.model.Cart;
-import com.example.distributedsystems.distributed.systems.model.CartContent;
-import com.example.distributedsystems.distributed.systems.model.Employee;
+import com.example.distributedsystems.distributed.systems.model.cart.Cart;
+import com.example.distributedsystems.distributed.systems.model.cart.CartBook;
+import com.example.distributedsystems.distributed.systems.model.cart.CartBooksResponse;
+import com.example.distributedsystems.distributed.systems.model.cart.CartRequest;
 import com.example.distributedsystems.distributed.systems.service.BookService;
 import com.example.distributedsystems.distributed.systems.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,42 +22,48 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private BookService bookService;
+
     @PostMapping("/createCart")
-    public ResponseEntity<Object> createCart(@RequestBody CartContent content) {
-        List<Long> bks = new ArrayList<>();
-        bks.add((long)content.getBid());
-        Cart c = new Cart(content.getUser(), bks);
-        cartService.createCart(c);
+    public ResponseEntity<Object> createCart(@RequestBody CartRequest content) {
+        Book book = bookService.getBookByIsbn(content.getIsbn());
+        if (book == null) {
+            // handle case where book is not found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Cart cart = new Cart(content.getUser());
+        CartBook cartBook = new CartBook(cart, book);
+        cart.getCartBooks().add(cartBook);
+        cartService.createCart(cart);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<Cart> getCartForUser(@RequestBody String user) {
-        Cart cartBooks = cartService.getCartForUser(user);
-        return new ResponseEntity<>(cartBooks, HttpStatus.OK);
+    @GetMapping("")
+    public ResponseEntity<CartBooksResponse> getBooksFromCart(@RequestParam String username) {
+        List<Long> books = cartService.getAllBooksInCartByUsername(username);
+        CartBooksResponse response = new CartBooksResponse(username, books);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Object> addBookToCart(@RequestBody CartContent content) {
-        cartService.updateCartForUser(content.getUser(), (long)content.getBid());
+    public ResponseEntity<Object> addBookToCart(@RequestBody CartRequest content) {
+        System.out.println(content);
+
+        cartService.updateCartForUser(content.getUser(), content.getIsbn());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteBook")
-    public ResponseEntity<Object> deleteBookFromCart(@RequestBody CartContent content) {
-        cartService.deleteBookFromCartForUser(content.getUser(), (long)content.getBid());
+    @DeleteMapping("/{username}/book/{isbn}")
+    public ResponseEntity<Object> deleteBookFromCartForUser(@PathVariable String username, @PathVariable Long isbn) {
+        cartService.deleteBookFromCartForUser(username, isbn);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteAllCart")
-    public ResponseEntity<Object> deleteCartByUsername(@RequestBody CartContent content) {
-        cartService.deleteCartForUser(content.getUser());
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Object> deleteCartByUsername(@PathVariable String username) {
+        cartService.deleteCartByUsername(username);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @DeleteMapping("/deleteCart")
-//    public ResponseEntity<List<Cart>> deleteCartByUsernameAndIsbn(@RequestBody Cart c) {
-//        cartService.deleteCartByUserAndIsbn(c.getUsername(), c.getIsbn());
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
 }

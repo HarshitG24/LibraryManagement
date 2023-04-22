@@ -1,4 +1,4 @@
-package com.example.distributedsystems.distributed.systems.model;
+package com.example.distributedsystems.distributed.systems.model.user;
 
 public class CreateUserRequest {
   private String firstName;
