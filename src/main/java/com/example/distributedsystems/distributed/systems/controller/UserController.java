@@ -23,6 +23,9 @@ public class UserController extends TwoPCController {
     public ResponseEntity<User> getUserByUsernameAnsPassword(@RequestParam String username, @RequestParam String password) {
         System.out.println(username);
         User user = userService.getUserByUsernameAndPassword(username, password);
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
         System.out.println("users:" + user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
@@ -30,6 +33,9 @@ public class UserController extends TwoPCController {
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserByUserId(@PathVariable Long userId) {
         User user = userService.getUserbyUserId(userId);
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
         System.out.println("users:" + user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
