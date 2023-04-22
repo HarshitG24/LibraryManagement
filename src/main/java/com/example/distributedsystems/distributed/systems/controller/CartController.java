@@ -24,8 +24,6 @@ public class CartController {
 
     @PostMapping("/createCart")
     public ResponseEntity<Object> createCart(@RequestBody CartContent content) {
-        System.out.println("user: " + content.getUser());
-        System.out.println("isbn: " + content.getBid());
         List<Long> bks = new ArrayList<>();
         bks.add((long)content.getBid());
         Cart c = new Cart(content.getUser(), bks);
@@ -40,15 +38,21 @@ public class CartController {
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Object> addBookToCart(@RequestBody Integer id, @RequestBody Long isbn) {
-        cartService.updateCartForUser(id, isbn);
+    public ResponseEntity<Object> addBookToCart(@RequestBody CartContent content) {
+        cartService.updateCartForUser(content.getUser(), (long)content.getBid());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deleteBook")
+    public ResponseEntity<Object> deleteBookFromCart(@RequestBody CartContent content) {
+        cartService.deleteBookFromCartForUser(content.getUser(), (long)content.getBid());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteAllCart")
-    public ResponseEntity<Cart> deleteCartByUsername(@RequestBody String user) {
-        Cart cartBooks = cartService.deleteCartForUser(user);
-        return new ResponseEntity<>(cartBooks, HttpStatus.OK);
+    public ResponseEntity<Object> deleteCartByUsername(@RequestBody CartContent content) {
+        cartService.deleteCartForUser(content.getUser());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 //    @DeleteMapping("/deleteCart")

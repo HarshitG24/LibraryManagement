@@ -24,14 +24,15 @@ public class CartService {
         return cartInterface.getCartByUsername(user);
     }
 
-    public Cart deleteCartForUser(String user) {
-        return cartInterface.deleteCartByUsername(user);
+    public void deleteCartForUser(String username) {
+        cartInterface.deleteCartByUsername(username);
     }
 
-    public void updateCartForUser(Integer id, Long isbn){
+    public void updateCartForUser(String user, Long isbn){
 
-        if(cartInterface.findById(id).isPresent()){
-            Cart cart = cartInterface.findById(id).get();
+
+        if(!cartInterface.findByUsername(user).isEmpty()){
+            Cart cart = cartInterface.findByUsername(user).get(0);
             List<Long> books = cart.getAllBooks();
             books.add(isbn);
             cart.setAllBooks(books);
@@ -39,7 +40,15 @@ public class CartService {
         }
     }
 
-//    public void deleteCartByUserAndIsbn(String user, Long isbn){
-//        cartInterface.deleteBookInCartByUsername(user, isbn);
-//    }
+    public void deleteBookFromCartForUser(String user, Long isbn){
+
+        if(!cartInterface.findByUsername(user).isEmpty()){
+            Cart cart = cartInterface.findByUsername(user).get(0);
+            List<Long> books = cart.getAllBooks();
+            books.remove(isbn);
+            cart.setAllBooks(books);
+            cartInterface.save(cart);
+        }
+    }
+
 }
