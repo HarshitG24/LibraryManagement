@@ -45,14 +45,14 @@ public class CartController {
 
     @DeleteMapping("/deleteBook")
     public ResponseEntity<Object> deleteBookFromCart(@RequestBody CartContent content) {
-        cartService.updateCartForUser(content.getUser(), (long)content.getBid());
+        cartService.deleteBookFromCartForUser(content.getUser(), (long)content.getBid());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteAllCart")
-    public ResponseEntity<Cart> deleteCartByUsername(@RequestBody String user) {
-        Cart cartBooks = cartService.deleteCartForUser(user);
-        return new ResponseEntity<>(cartBooks, HttpStatus.OK);
+    public ResponseEntity<Object> deleteCartByUsername(@RequestBody CartContent content) {
+        cartService.deleteCartForUser(content.getUser());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 //    @DeleteMapping("/deleteCart")
