@@ -15,6 +15,8 @@ public interface CartInterface extends CrudRepository<Cart, Integer> {
     Cart getCartByUsername(String username);
     Cart deleteCartByUsername(String username);
 
+    List<Cart> findByUsername(String username);
+
 //    Cart updateBooksByUsername(Cart c);
 
 //    @Modifying
