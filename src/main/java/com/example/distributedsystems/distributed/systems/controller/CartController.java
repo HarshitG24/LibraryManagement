@@ -32,7 +32,7 @@ public class CartController {
             // handle case where book is not found
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Cart cart = new Cart(content.getUser());
+        Cart cart = new Cart(content.getUsername());
         CartBook cartBook = new CartBook(cart, book);
         cart.getCartBooks().add(cartBook);
         cartService.createCart(cart);
@@ -48,16 +48,14 @@ public class CartController {
 
     @PostMapping("/addBook")
     public ResponseEntity<Object> addBookToCart(@RequestBody CartRequest content) {
-        System.out.println(content);
-
-        cartService.updateCartForUser(content.getUser(), content.getIsbn());
-        return new ResponseEntity<>(HttpStatus.OK);
+        cartService.updateCartForUser(content.getUsername(), content.getIsbn());
+        return new ResponseEntity<>(content.getIsbn(), HttpStatus.OK);
     }
 
     @DeleteMapping("/{username}/book/{isbn}")
     public ResponseEntity<Object> deleteBookFromCartForUser(@PathVariable String username, @PathVariable Long isbn) {
         cartService.deleteBookFromCartForUser(username, isbn);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(isbn, HttpStatus.OK);
     }
 
     @DeleteMapping("/{username}")

@@ -1,20 +1,20 @@
 package com.example.distributedsystems.distributed.systems.model.cart;
 
 public class CartRequest {
-    private String user;
+    private String username;
     private Long isbn;
 
-    public CartRequest(String user, Long isbn) {
-        this.user = user;
+    public CartRequest(String username, Long isbn) {
+        this.username = username;
         this.isbn = isbn;
     }
 
-    public String getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getIsbn() {

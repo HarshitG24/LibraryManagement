@@ -45,6 +45,4 @@ public interface TransactionInterface extends CrudRepository<Transaction, Long> 
     }
     return returnedBookIds;
   }
-
-
 }

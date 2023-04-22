@@ -29,7 +29,6 @@ public class BookController {
   @GetMapping("/")
   public ResponseEntity<List<Book>> getAllBooks() {
     List<Book> books = bookService.getAllBooks();
-    System.out.println("Books:" + books);
     return new ResponseEntity<>(books, HttpStatus.OK);
   }
 
