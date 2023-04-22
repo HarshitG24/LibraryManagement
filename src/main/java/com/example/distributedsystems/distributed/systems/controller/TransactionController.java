@@ -35,7 +35,7 @@ public class TransactionController {
     return new ResponseEntity<>(transactions, HttpStatus.OK);
   }
 
-  @PostMapping("/")
+  @PostMapping("/createTransaction")
   public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequest transactionRequest) {
     Transaction transaction = new Transaction(transactionRequest.getUserId(), transactionRequest.getBookIds());
     Transaction savedTransaction = transactionService.createTransaction(transaction);
@@ -53,6 +53,12 @@ public class TransactionController {
   public ResponseEntity<List<Long>> getAllUnreturnedBooksByUserId(@PathVariable Long userId) {
     List<Long> unreturnedBookIds = transactionService.getAllUnreturnedBooksByUserId(userId);
     return new ResponseEntity<>(unreturnedBookIds, HttpStatus.OK);
+  }
+
+  @GetMapping("/returned/{userId}")
+  public ResponseEntity<List<Long>> getAllReturnedBooksByUserId(@PathVariable Long userId) {
+    List<Long> returnedBookIds = transactionService.getAllReturnedBooksByUserId(userId);
+    return new ResponseEntity<>(returnedBookIds, HttpStatus.OK);
   }
 
   @GetMapping("/userId/{userId}")

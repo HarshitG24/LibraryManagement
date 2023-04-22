@@ -34,4 +34,17 @@ public interface TransactionInterface extends CrudRepository<Transaction, Long> 
     }
     return unreturnedBookIds;
   }
+
+  @Transactional
+  default List<Long> getReturnedBookIdsByUserId(Long userId) {
+    List<Long> returnedBookIds = new ArrayList<>();
+    List<Transaction> transactions = getAllByUserId(userId);
+    for (Transaction transaction : transactions) {
+      List<Long> transactionUnreturnedBookIds = transaction.getAllReturnedBooks();
+      returnedBookIds.addAll(transactionUnreturnedBookIds);
+    }
+    return returnedBookIds;
+  }
+
+
 }

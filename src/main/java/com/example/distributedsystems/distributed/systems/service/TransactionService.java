@@ -34,6 +34,10 @@ public class TransactionService {
     return transactionInterface.getUnreturnedBookIdsByUserId(userId);
   }
 
+  public List<Long> getAllReturnedBooksByUserId(Long userId) {
+    return transactionInterface.getReturnedBookIdsByUserId(userId);
+  }
+
   public Transaction createTransaction(Transaction transaction) {
     return transactionInterface.save(transaction);
   }

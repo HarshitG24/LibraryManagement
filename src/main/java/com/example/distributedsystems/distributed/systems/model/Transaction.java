@@ -74,6 +74,17 @@ public class Transaction {
     return unreturnedBookIds;
   }
 
+  public List<Long> getAllReturnedBooks() {
+    List<Long> returnedBookIds = new ArrayList<>();
+    for (Map.Entry<Long, Boolean> entry : bookStatus.entrySet()) {
+      Long bookId = entry.getKey();
+      if (entry.getValue()) {
+        returnedBookIds.add(bookId);
+      }
+    }
+    return returnedBookIds;
+  }
+
 
   @Override
   public String toString() {

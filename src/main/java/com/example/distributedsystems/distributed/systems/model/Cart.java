@@ -2,6 +2,8 @@ package com.example.distributedsystems.distributed.systems.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name="cart")
 public class Cart {
@@ -9,25 +11,26 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private long isbn;
-
     private String username;
 
-    public Cart(long isbn, String username) {
-        this.isbn = isbn;
+    private List<Long> allBooks;
+
+
+    public Cart(String username, List<Long> allBooks) {
         this.username = username;
+        this.allBooks = allBooks;
     }
 
     public Cart() {
 
     }
 
-    public long getIsbn() {
-        return isbn;
+    public List<Long> getAllBooks() {
+        return allBooks;
     }
 
-    public void setIsbn(long isbn) {
-        this.isbn = isbn;
+    public void setAllBooks(List<Long> allBooks) {
+        this.allBooks = allBooks;
     }
 
     public String getUsername() {
