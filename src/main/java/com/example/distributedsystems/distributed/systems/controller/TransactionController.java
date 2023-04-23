@@ -27,7 +27,7 @@ public class TransactionController {
   @Autowired
   private TransactionService transactionService;
 
-  @GetMapping("/")
+  @GetMapping("")
   public ResponseEntity<List<Transaction>> getAllTransactions() {
 
     List<Transaction> transactions = transactionService.getAllTransactions();
@@ -37,7 +37,7 @@ public class TransactionController {
 
   @PostMapping("/createTransaction")
   public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequest transactionRequest) {
-    Transaction transaction = new Transaction(transactionRequest.getUserId(), transactionRequest.getBookIds());
+    Transaction transaction = new Transaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIds());
     Transaction savedTransaction = transactionService.createTransaction(transaction);
     return ResponseEntity.ok(savedTransaction);
   }
@@ -49,21 +49,21 @@ public class TransactionController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @GetMapping("/unreturned/{userId}")
-  public ResponseEntity<List<Long>> getAllUnreturnedBooksByUserId(@PathVariable Long userId) {
-    List<Long> unreturnedBookIds = transactionService.getAllUnreturnedBooksByUserId(userId);
+  @GetMapping("/unreturned/{username}")
+  public ResponseEntity<List<Long>> getAllUnreturnedBooksByUserId(@PathVariable String username) {
+    List<Long> unreturnedBookIds = transactionService.getAllUnreturnedBooksByUsername(username);
     return new ResponseEntity<>(unreturnedBookIds, HttpStatus.OK);
   }
 
-  @GetMapping("/returned/{userId}")
-  public ResponseEntity<List<Long>> getAllReturnedBooksByUserId(@PathVariable Long userId) {
-    List<Long> returnedBookIds = transactionService.getAllReturnedBooksByUserId(userId);
+  @GetMapping("/returned/{username}")
+  public ResponseEntity<List<Long>> getAllReturnedBooksByUserId(@PathVariable String username) {
+    List<Long> returnedBookIds = transactionService.getAllReturnedBooksByUsername(username);
     return new ResponseEntity<>(returnedBookIds, HttpStatus.OK);
   }
 
-  @GetMapping("/userId/{userId}")
-  public ResponseEntity<List<Transaction>> getAllTransactionByUserId(@PathVariable Long userId) {
-    List<Transaction> transactions = transactionService.getAllTransactionsByUserId(userId);
+  @GetMapping("/userId/{username}")
+  public ResponseEntity<List<Transaction>> getAllTransactionByUserId(@PathVariable String username) {
+    List<Transaction> transactions = transactionService.getAllTransactionsByUsername(username);
     return new ResponseEntity<>(transactions, HttpStatus.OK);
   }
 

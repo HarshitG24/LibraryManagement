@@ -6,11 +6,16 @@ import com.example.distributedsystems.distributed.systems.repository.UserInterfa
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     @Autowired
     private UserInterface userInterface;
 
+    public List<User> getAllUsers() {
+        return (List<User>) userInterface.findAll();
+    }
     public User getUserbyUserId(Long userId) {
         return  userInterface.getUserByUserId(userId);
     }

@@ -18,8 +18,8 @@ public class TransactionService {
     return (List<Transaction>) transactionInterface.findAll();
   }
 
-  public List<Transaction> getAllTransactionsByUserId(Long userId) {
-    return transactionInterface.getAllByUserId(userId);
+  public List<Transaction> getAllTransactionsByUsername(String username) {
+    return transactionInterface.getAllByUsername(username);
   }
 
   public Transaction getTransactionByTransactionId(Long transactionId) {
@@ -30,12 +30,12 @@ public class TransactionService {
     transactionInterface.updateBookStatus(transactionId, bookId);
   }
 
-  public List<Long> getAllUnreturnedBooksByUserId(Long userId) {
-    return transactionInterface.getUnreturnedBookIdsByUserId(userId);
+  public List<Long> getAllUnreturnedBooksByUsername(String username) {
+    return transactionInterface.getUnreturnedBookIdsByUsername(username);
   }
 
-  public List<Long> getAllReturnedBooksByUserId(Long userId) {
-    return transactionInterface.getReturnedBookIdsByUserId(userId);
+  public List<Long> getAllReturnedBooksByUsername(String username) {
+    return transactionInterface.getReturnedBookIdsByUsername(username);
   }
 
   public Transaction createTransaction(Transaction transaction) {

@@ -18,21 +18,25 @@ import jakarta.persistence.Table;
 public class Transaction {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long transactionId;
-  private Long userId;
+  private String username;
 
   @ElementCollection
-  private Map<Long, Boolean> bookStatus = new HashMap<>();
+  private final Map<Long, Boolean> bookStatus = new HashMap<>();
 
-  public Transaction(Long userId, List<Long> bookLoanIds) {
-    this.userId = userId;
+  public Transaction(Long transactionId, String username, List<Long> bookLoanIds) {
+    this.transactionId = transactionId;
+    this.username = username;
     for (Long bookId: bookLoanIds) {
       this.bookStatus.put(bookId, false);
     }
   }
 
   public Transaction() {
+  }
+
+  public void setTransactionId(Long transactionId) {
+    this.transactionId = transactionId;
   }
 
   public List<Long> getBookLoans() {
@@ -51,16 +55,12 @@ public class Transaction {
     return transactionId;
   }
 
-  public void setTransactionId(Long transactionId) {
-    this.transactionId = transactionId;
+  public String getUsername() {
+    return username;
   }
 
-  public Long getUserId() {
-    return userId;
-  }
-
-  public void setUserId(Long userId) {
-    this.userId = userId;
+  public void setUsername(String username) {
+    this.username = username;
   }
 
   public List<Long> getAllUnreturnedBooks() {
@@ -90,7 +90,7 @@ public class Transaction {
   public String toString() {
     return "Transaction{" +
             "transactionId=" + transactionId +
-            ", userId=" + userId +
+            ", username=" + username +
             ", bookStatus=" + bookStatus +
             '}';
   }
