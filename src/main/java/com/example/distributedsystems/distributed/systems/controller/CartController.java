@@ -65,6 +65,7 @@ public class CartController {
 
     @PostMapping("/addBook")
     public ResponseEntity<Object> addBookToCart(@RequestBody CartRequest content) {
+        // paxos here
         System.out.println("add book: " + content);
         cartService.updateCartForUser(content.getUsername(), content.getIsbn());
         return new ResponseEntity<>(content.getIsbn(), HttpStatus.OK);
@@ -72,12 +73,14 @@ public class CartController {
 
     @DeleteMapping("/{username}/book/{isbn}")
     public ResponseEntity<Object> deleteBookFromCartForUser(@PathVariable String username, @PathVariable Long isbn) {
+        // paxos here
         cartService.deleteBookFromCartForUser(username, isbn);
         return new ResponseEntity<>(isbn, HttpStatus.OK);
     }
 
     @DeleteMapping("/{username}")
     public ResponseEntity<Object> deleteCartByUsername(@PathVariable String username) {
+        // paxos here
         cartService.deleteCartByUsername(username);
         return new ResponseEntity<>(HttpStatus.OK);
     }

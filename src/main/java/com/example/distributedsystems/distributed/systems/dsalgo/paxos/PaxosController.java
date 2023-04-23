@@ -95,7 +95,7 @@ public class PaxosController {
             for (String url: allPorts) {
                 executor.execute(() -> {
                     // learning phase
-
+                    restService.post(url + "/paxos/learn", t);
                 });
             }
 

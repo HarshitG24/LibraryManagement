@@ -6,6 +6,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.paxos.Promise;
 import com.example.distributedsystems.distributed.systems.model.Paxos;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import com.example.distributedsystems.distributed.systems.repository.PxRepository;
+import com.example.distributedsystems.distributed.systems.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.http.HttpStatus;
@@ -32,109 +33,10 @@ public class PXController {
     @Autowired
     ServerProperties serverProperties;
 
+    @Autowired
+    private TransactionService transactionService;
+
     private long maxIdSeen = 0L;
-
-
-
-//    @PostMapping("/propose")
-//    public ResponseEntity<Boolean> propose(@RequestBody PaxosTransaction t) {
-//
-//
-//        try{
-//            List<Integer> allPorts = new ArrayList<>();
-//
-//            // 1. we store the active list of ports, the quorum
-//            List<LinkedHashMap<String, Object>> server_list = (List<LinkedHashMap<String, Object>>) restService.get(restService.generateURL("localhost", serverProperties.getPort(), "server","allServers"), null).getBody();
-//            for(LinkedHashMap<String, Object> a: server_list){
-//                allPorts.add(Integer.parseInt(a.get("port").toString()));
-//
-//                System.out.println("port number is: " + a.get("port"));
-//            }
-//
-////            // part 2
-////            ExecutorService executor = Executors.newFixedThreadPool(10);
-////
-////            for (int i=0; i<allPorts.size(); i++) {
-////                Integer p = allPorts.get(i);
-////
-////                executor.execute(() -> {
-////                    LinkedHashMap<String, Object> receivedPromise = (LinkedHashMap<String, Object>)restService.post(restService.generateURL("localhost", p, "prepare"), t).getBody();
-////
-////                    Promise promise = new Promise((boolean)receivedPromise.get("didPromise"), (long)receivedPromise.get("proposalId"));
-////
-////                    if(promise != null && promise.isDidPromise()){
-////                        promiseAccepted++;
-////                    }
-////
-////                });
-////            }
-////
-////            executor.shutdown(); // To execute the above tasks, which is to send the commit message to all the replica together and not one after other.
-////            try {
-////                executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
-////            } catch (InterruptedException e) {
-////                throw new RuntimeException(e);
-////            }
-////
-////            // Failed to reach consensus
-////            if(promiseAccepted <= allPorts.size()/2){
-////                System.out.println("failed to reach consensus for the transaction: " + t.getTransactionId() + " in prepare phase");
-////            }
-////
-////
-////            // consensus achieved
-////
-////            executor = Executors.newFixedThreadPool(10);
-////
-////            for (int i=0; i<allPorts.size(); i++) {
-////                Integer p = allPorts.get(i);
-////
-////                executor.execute(() -> {
-////                    Long acceptedTID = (Long)restService.post(restService.generateURL("localhost", p, "accept"), t).getBody();
-////
-////                    if(acceptedTID != Long.MIN_VALUE && acceptedTID == t.getTransactionId()){
-////                        nodesAccepted++;
-////                    }
-////
-////                });
-////            }
-////
-////            executor.shutdown(); // To execute the above tasks, which is to send the commit message to all the replica together and not one after other.
-////            try {
-////                executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
-////            } catch (InterruptedException e) {
-////                throw new RuntimeException(e);
-////            }
-////
-////            // Failed to reach consensus
-////            if(nodesAccepted <= allPorts.size()/2){
-////                System.out.println("failed to reach consensus for the transaction: " + t.getTransactionId() + " in accept");
-////            }
-////
-////            // consensus achieved all nodes accepted, now we go to learn phase
-////            for (int i=0; i<allPorts.size(); i++) {
-////                Integer p = allPorts.get(i);
-////
-////                executor.execute(() -> {
-////
-////
-////                });
-////            }
-////
-////            executor.shutdown(); // To execute the above tasks, which is to send the commit message to all the replica together and not one after other.
-////            try {
-////                executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
-////            } catch (InterruptedException e) {
-////                throw new RuntimeException(e);
-////            }
-//
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        return new ResponseEntity<>(true, HttpStatus.OK);
-//    }
 
     @PostMapping("/prepare")
     public ResponseEntity<Object> prepare(@RequestBody PaxosTransaction transaction) {
@@ -177,7 +79,23 @@ public class PXController {
     }
 
     @PostMapping("/learn")
-    public ResponseEntity<Object> learn(@RequestBody Transaction transaction) {
+    public ResponseEntity<Object> learn(@RequestBody PaxosTransaction t) {
+        switch (t.getScenario()){
+            case CHECKOUT:
+                // do something
+                checkout(t);
+                break;
+
+
+            default:
+                return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+        }
         return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    public void checkout(PaxosTransaction pt){
+        Transaction transaction = new Transaction(pt.getTransactionId(), pt.getUserId(), pt.getAllBooks());
+        Transaction savedTransaction = transactionService.createTransaction(transaction);
+        transactionService.createTransaction(savedTransaction);
     }
 }
