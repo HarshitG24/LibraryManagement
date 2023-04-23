@@ -53,10 +53,10 @@ public class BookController extends PaxosController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
-  @PutMapping("/{isbn}")
+  @PutMapping("/{isbn}/{operation}")
   public ResponseEntity<Object> updateBookInventoryByIsbn(
-          @PathVariable("isbn") Long isbn, @RequestParam("inventory") int inventory) {
-    int rowsAffected = bookService.updateBookInventoryByIsbn(isbn, inventory);
+          @PathVariable("isbn") Long isbn, @RequestParam("operation") String operation) {
+    int rowsAffected = bookService.updateBookInventoryByIsbn(isbn, operation);
     if (rowsAffected > 0) {
       return new ResponseEntity<>(HttpStatus.OK);
     } else {

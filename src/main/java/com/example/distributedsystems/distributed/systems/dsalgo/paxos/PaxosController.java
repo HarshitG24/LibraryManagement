@@ -3,7 +3,6 @@ package com.example.distributedsystems.distributed.systems.dsalgo.paxos;
 import com.example.distributedsystems.distributed.systems.coordinator.RestService;
 import com.example.distributedsystems.distributed.systems.node.NodeRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,8 +15,6 @@ import java.util.concurrent.TimeUnit;
 public class PaxosController {
     @Autowired
     RestService restService;
-    @Autowired
-    private ServerProperties serverProperties;
 
     @Autowired
     NodeRegistry nodeRegistry;
@@ -32,18 +29,7 @@ public class PaxosController {
         try{
             Set<String> allPorts = nodeRegistry.getActiveNodes();  //new ArrayList<>();
 
-            // 1. we store the active list of ports, the quorum
-//            List<LinkedHashMap<String, Object>> server_list = (List<LinkedHashMap<String, Object>>) restService.get(restService.generateURL("localhost", serverProperties.getPort(), "server","allServers"), null).getBody();
-//
-//
-//
-//            for(LinkedHashMap<String, Object> a: server_list){
-//                allPorts.add(Integer.parseInt(a.get("port").toString()));
-//
-//                System.out.println("port number is: " + a.get("port"));
-//            }
-
-//            // part 2
+            // part 2
             ExecutorService executor = Executors.newFixedThreadPool(10);
 
             for (String url: allPorts) {
@@ -74,7 +60,6 @@ public class PaxosController {
 
 
             // consensus achieved
-
             executor = Executors.newFixedThreadPool(10);
 
             for (String url: allPorts) {
@@ -108,8 +93,6 @@ public class PaxosController {
 
             // consensus achieved all nodes accepted, now we go to learn phase
             for (String url: allPorts) {
-//                Integer p = allPorts.get(i);
-
                 executor.execute(() -> {
                     // learning phase
 
