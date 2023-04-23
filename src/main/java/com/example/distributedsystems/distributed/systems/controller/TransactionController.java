@@ -1,5 +1,8 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosController;
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScenario;
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import com.example.distributedsystems.distributed.systems.model.transaction.TransactionRequest;
 import com.example.distributedsystems.distributed.systems.service.TransactionService;
@@ -22,7 +25,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})
 @RequestMapping("/transaction")
-public class TransactionController {
+public class TransactionController extends PaxosController {
 
   @Autowired
   private TransactionService transactionService;
@@ -37,14 +40,21 @@ public class TransactionController {
 
   @PostMapping("/createTransaction")
   public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequest transactionRequest) {
-    Transaction transaction = new Transaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIds());
-    Transaction savedTransaction = transactionService.createTransaction(transaction);
-    return ResponseEntity.ok(savedTransaction);
+//    Transaction transaction = new Transaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIds());
+//    Transaction savedTransaction = transactionService.createTransaction(transaction);
+
+    // 1. call paxos here and save the transaction in learners phase
+    PaxosTransaction pt = new PaxosTransaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIds(), PaxosScenario.CHECKOUT);
+//    return ResponseEntity.ok(savedTransaction);
+    propose(pt);
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 
 
   @PutMapping("/{transactionId}/book/{bookId}")
   public ResponseEntity<Object> markBookReturned(@PathVariable Long transactionId, @PathVariable Long bookId) {
+    // 2. call paxos here and save the transaction in learners phase
+    // tid, isbn, usename
     transactionService.updateBookReturnedByTransactionId(transactionId, bookId);
     return new ResponseEntity<>(HttpStatus.OK);
   }

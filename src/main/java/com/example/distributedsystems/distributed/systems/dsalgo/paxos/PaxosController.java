@@ -112,7 +112,7 @@ public class PaxosController {
 
                 executor.execute(() -> {
                     // learning phase
-
+                    restService.post(url + "/paxos/learn", t);
                 });
             }
 

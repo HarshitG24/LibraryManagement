@@ -64,16 +64,16 @@ public class BookController extends PaxosController {
     }
   }
 
-  @PostMapping("/testPaxos")
-  public ResponseEntity<Object> testBook(@RequestBody Book book) {
-//    bookService.createBook(book);
-    List<Long> books = new ArrayList<>();
-    books.add(123456789012345L);
-    books.add(123456789012346L);
-
-    PaxosTransaction t = new PaxosTransaction(123456789012345L, 123L);
-    propose(t);
-//    return restService.post(restService.generateURL("localhost", 8081, "prepare"), t);
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
+//  @PostMapping("/testPaxos")
+//  public ResponseEntity<Object> testBook(@RequestBody Book book) {
+////    bookService.createBook(book);
+//    List<Long> books = new ArrayList<>();
+//    books.add(123456789012345L);
+//    books.add(123456789012346L);
+//
+//    PaxosTransaction t = new PaxosTransaction(123456789012345L, 123L);
+//    propose(t);
+////    return restService.post(restService.generateURL("localhost", 8081, "prepare"), t);
+//    return new ResponseEntity<>(HttpStatus.OK);
+//  }
 }
