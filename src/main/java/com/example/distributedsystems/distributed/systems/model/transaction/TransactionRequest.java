@@ -4,15 +4,24 @@ import java.util.List;
 
 
 public class TransactionRequest {
-  private Long userId;
+  private Long transactionId;
+  private String username;
   private List<Long> bookIds;
 
-  public Long getUserId() {
-    return userId;
+  public Long getTransactionId() {
+    return transactionId;
   }
 
-  public void setUserId(Long userId) {
-    this.userId = userId;
+  public void setTransactionId(Long transactionId) {
+    this.transactionId = transactionId;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 
   public List<Long> getBookIds() {

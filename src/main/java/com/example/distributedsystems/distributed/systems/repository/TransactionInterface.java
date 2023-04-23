@@ -13,7 +13,7 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface TransactionInterface extends CrudRepository<Transaction, Long> {
-  List<Transaction> getAllByUserId(Long userId);
+  List<Transaction> getAllByUsername(String username);
   Transaction getTransactionByTransactionId(Long transactionId);
 
   @Modifying
@@ -25,9 +25,9 @@ public interface TransactionInterface extends CrudRepository<Transaction, Long> 
   }
 
   @Transactional
-  default List<Long> getUnreturnedBookIdsByUserId(Long userId) {
+  default List<Long> getUnreturnedBookIdsByUsername(String username) {
     List<Long> unreturnedBookIds = new ArrayList<>();
-    List<Transaction> transactions = getAllByUserId(userId);
+    List<Transaction> transactions = getAllByUsername(username);
     for (Transaction transaction : transactions) {
       List<Long> transactionUnreturnedBookIds = transaction.getAllUnreturnedBooks();
       unreturnedBookIds.addAll(transactionUnreturnedBookIds);
@@ -36,9 +36,9 @@ public interface TransactionInterface extends CrudRepository<Transaction, Long> 
   }
 
   @Transactional
-  default List<Long> getReturnedBookIdsByUserId(Long userId) {
+  default List<Long> getReturnedBookIdsByUsername(String username) {
     List<Long> returnedBookIds = new ArrayList<>();
-    List<Transaction> transactions = getAllByUserId(userId);
+    List<Transaction> transactions = getAllByUsername(username);
     for (Transaction transaction : transactions) {
       List<Long> transactionUnreturnedBookIds = transaction.getAllReturnedBooks();
       returnedBookIds.addAll(transactionUnreturnedBookIds);

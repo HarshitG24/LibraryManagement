@@ -4,12 +4,14 @@ import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.model.cart.Cart;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBook;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBookId;
+import com.example.distributedsystems.distributed.systems.model.cart.CartDTO;
 import com.example.distributedsystems.distributed.systems.repository.BookInterface;
 import com.example.distributedsystems.distributed.systems.repository.CartInterface;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +30,28 @@ public class CartService {
 
   @Autowired
   CartBookInterface cartBookInterface;
+
+  public List<CartDTO> getAllCarts() {
+    List<Cart> carts = (List<Cart>) cartInterface.findAll();
+    List<CartDTO> cartDTOs = new ArrayList<>();
+    for (Cart cart : carts) {
+      CartDTO cartDTO = new CartDTO();
+      cartDTO.setId(cart.getId());
+      cartDTO.setUsername(cart.getUsername());
+      cartDTOs.add(cartDTO);
+    }
+    return cartDTOs;
+  }
+
+
+  public List<CartBookId> getAllCartBooks() {
+    List<CartBook> cartsBooks = (List<CartBook>) cartBookInterface.findAll();
+    List<CartBookId> cartBookIds = new ArrayList<>();
+    for (CartBook cartsBook : cartsBooks) {
+      cartBookIds.add(cartsBook.getId());
+    }
+    return cartBookIds;
+  }
 
   public void createCart(Cart cart) {
     cartInterface.save(cart);

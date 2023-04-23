@@ -18,8 +18,8 @@ public class BookService {
     return (List<Book>) bookInterface.findAll();
   }
 
-  public void createBook(Book e) {
-    bookInterface.save(e);
+  public Book createBook(Book e) {
+    return bookInterface.save(e);
   }
 
   public Book getBookByIsbn(Long isbn) {

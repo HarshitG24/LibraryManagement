@@ -26,7 +26,7 @@ public class BookController {
   @Autowired
   private BookService bookService;
 
-  @GetMapping("/")
+  @GetMapping("")
   public ResponseEntity<List<Book>> getAllBooks() {
     List<Book> books = bookService.getAllBooks();
     return new ResponseEntity<>(books, HttpStatus.OK);
@@ -40,9 +40,10 @@ public class BookController {
   }
 
   @PostMapping("/createBook")
-  public ResponseEntity<Object> createBook(@RequestBody Book book) {
-    bookService.createBook(book);
-    return new ResponseEntity<>(HttpStatus.OK);
+  public ResponseEntity<Book> createBook(@RequestBody Book book) {
+    System.out.println("create book: " + book);
+    Book result = bookService.createBook(book);
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @PutMapping("/{isbn}")

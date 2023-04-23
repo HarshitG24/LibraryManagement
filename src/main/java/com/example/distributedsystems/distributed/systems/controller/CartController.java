@@ -3,7 +3,9 @@ package com.example.distributedsystems.distributed.systems.controller;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.model.cart.Cart;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBook;
+import com.example.distributedsystems.distributed.systems.model.cart.CartBookId;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBooksResponse;
+import com.example.distributedsystems.distributed.systems.model.cart.CartDTO;
 import com.example.distributedsystems.distributed.systems.model.cart.CartRequest;
 import com.example.distributedsystems.distributed.systems.service.BookService;
 import com.example.distributedsystems.distributed.systems.service.CartService;
@@ -19,11 +21,26 @@ import java.util.List;
 @RequestMapping("/cart")
 public class CartController {
 
+    //TODO: Cart Controller
     @Autowired
     private CartService cartService;
 
     @Autowired
     private BookService bookService;
+
+    @GetMapping("/all")
+    public ResponseEntity<List<CartDTO>> getAllCarts() {
+        System.out.println("All carts");
+        List<CartDTO> carts = cartService.getAllCarts();
+        System.out.println("Get all carts: " + carts);
+        return new ResponseEntity<>(carts, HttpStatus.OK);
+    }
+
+    @GetMapping("/cartBooks/all")
+    public ResponseEntity<List<CartBookId>> getAllCartBooks() {
+        List<CartBookId> cartBooks = cartService.getAllCartBooks();
+        return new ResponseEntity<>(cartBooks, HttpStatus.OK);
+    }
 
     @PostMapping("/createCart")
     public ResponseEntity<Object> createCart(@RequestBody CartRequest content) {
@@ -48,6 +65,7 @@ public class CartController {
 
     @PostMapping("/addBook")
     public ResponseEntity<Object> addBookToCart(@RequestBody CartRequest content) {
+        System.out.println("add book: " + content);
         cartService.updateCartForUser(content.getUsername(), content.getIsbn());
         return new ResponseEntity<>(content.getIsbn(), HttpStatus.OK);
     }
