@@ -50,5 +50,9 @@ public class RestService {
     public String generateURL(String host, int port, String super_var,String var) {
         return "http://"+host+":"+port+"/"+super_var+"/"+var;
     }
+
+    public String generateURL(String host, int port,String var) {
+        return "http://"+host+":"+port+"/"+"/"+var;
+    }
 }
 

@@ -1,5 +1,8 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
+import com.example.distributedsystems.distributed.systems.coordinator.RestService;
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosController;
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.service.BookService;
 
@@ -16,15 +19,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})
 @RequestMapping("/book")
-public class BookController {
+public class BookController extends PaxosController {
 
   @Autowired
   private BookService bookService;
+
+  @Autowired
+  private RestService restService;
 
   @GetMapping("/")
   public ResponseEntity<List<Book>> getAllBooks() {
@@ -54,5 +61,18 @@ public class BookController {
     } else {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+  }
+
+  @PostMapping("/testPaxos")
+  public ResponseEntity<Object> testBook(@RequestBody Book book) {
+//    bookService.createBook(book);
+    List<Long> books = new ArrayList<>();
+    books.add(123456789012345L);
+    books.add(123456789012346L);
+
+    PaxosTransaction t = new PaxosTransaction(123456789012345L, 123L);
+    propose(t);
+//    return restService.post(restService.generateURL("localhost", 8081, "prepare"), t);
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 }
