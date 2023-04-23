@@ -27,10 +27,16 @@ public class PaxosController {
 
     int nodesAccepted = 0;
 
+    int proposalId = 0;
+
     public ResponseEntity<Boolean> propose(@RequestBody PaxosTransaction t) {
 
         try{
             Set<String> allPorts = nodeRegistry.getActiveNodes();  //new ArrayList<>();
+
+            String pid = System.currentTimeMillis() + serverProperties.getPort() + "";
+            System.out.println("pid is: " + pid);
+            t.setProposalId(System.currentTimeMillis() + serverProperties.getPort().longValue());
 
             // 1. we store the active list of ports, the quorum
 //            List<LinkedHashMap<String, Object>> server_list = (List<LinkedHashMap<String, Object>>) restService.get(restService.generateURL("localhost", serverProperties.getPort(), "server","allServers"), null).getBody();
@@ -80,10 +86,9 @@ public class PaxosController {
             for (String url: allPorts) {
 
                 executor.execute(() -> {
-                    Long acceptedTID = (Long)restService.post(url + "/paxos/accept", t).getBody();
-
-                    System.out.println("returned tid is: " + acceptedTID + " tid: " + t.getTransactionId() + Long.compare(acceptedTID, t.getTransactionId()));
-                    if(acceptedTID != null){
+                    long acceptedTID = (long)restService.post(url + "/paxos/accept", t).getBody();
+                    System.out.println("accepted id is: " + acceptedTID);
+                    if(acceptedTID != Long.MIN_VALUE){
                         nodesAccepted++;
                     }
 
