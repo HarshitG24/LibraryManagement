@@ -55,7 +55,7 @@ public class PXController {
             return new ResponseEntity<>(new Promise(true, transaction.getTransactionId()), HttpStatus.OK);
         } else {
             System.out.println("Got Preparation request for " + transaction.getTransactionId() + " at port: " + serverProperties.getPort() + ": Denied");
-            return new ResponseEntity<>(new Promise(false, 0), HttpStatus.OK);
+            return new ResponseEntity<>(new Promise(false, Long.MIN_VALUE), HttpStatus.OK);
         }
     }
 
@@ -82,9 +82,11 @@ public class PXController {
     public ResponseEntity<Object> learn(@RequestBody PaxosTransaction t) {
         switch (t.getScenario()){
             case CHECKOUT:
-                // do something
                 checkout(t);
                 break;
+
+            case RETURN:
+                returnBook(t);
 
 
             default:
@@ -97,5 +99,9 @@ public class PXController {
         Transaction transaction = new Transaction(pt.getTransactionId(), pt.getUserId(), pt.getAllBooks());
         Transaction savedTransaction = transactionService.createTransaction(transaction);
         transactionService.createTransaction(savedTransaction);
+    }
+
+    public void returnBook(PaxosTransaction pt){
+        transactionService.updateBookReturnedByTransactionId(pt.getTransactionId(), pt.getAllBooks().get(0));
     }
 }
