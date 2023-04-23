@@ -1,16 +1,14 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.paxos;
 
 import com.example.distributedsystems.distributed.systems.coordinator.RestService;
+import com.example.distributedsystems.distributed.systems.node.NodeRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +19,9 @@ public class PaxosController {
     @Autowired
     private ServerProperties serverProperties;
 
+    @Autowired
+    NodeRegistry nodeRegistry;
+
 
     int promiseAccepted = 0; // id of the proposal accepted
 
@@ -29,34 +30,27 @@ public class PaxosController {
     public ResponseEntity<Boolean> propose(@RequestBody PaxosTransaction t) {
 
         try{
-            List<Integer> allPorts = new ArrayList<>();
+            Set<String> allPorts = nodeRegistry.getActiveNodes();  //new ArrayList<>();
 
             // 1. we store the active list of ports, the quorum
-            List<LinkedHashMap<String, Object>> server_list = (List<LinkedHashMap<String, Object>>) restService.get(restService.generateURL("localhost", serverProperties.getPort(), "server","allServers"), null).getBody();
-
-
-
-            for(LinkedHashMap<String, Object> a: server_list){
-                allPorts.add(Integer.parseInt(a.get("port").toString()));
-
-                System.out.println("port number is: " + a.get("port"));
-            }
+//            List<LinkedHashMap<String, Object>> server_list = (List<LinkedHashMap<String, Object>>) restService.get(restService.generateURL("localhost", serverProperties.getPort(), "server","allServers"), null).getBody();
+//
+//
+//
+//            for(LinkedHashMap<String, Object> a: server_list){
+//                allPorts.add(Integer.parseInt(a.get("port").toString()));
+//
+//                System.out.println("port number is: " + a.get("port"));
+//            }
 
 //            // part 2
             ExecutorService executor = Executors.newFixedThreadPool(10);
 
-            for (int i=0; i<allPorts.size(); i++) {
-                Integer p = allPorts.get(i);
+            for (String url: allPorts) {
 
                 executor.execute(() -> {
-                    LinkedHashMap<String, Object> receivedPromise = (LinkedHashMap<String, Object>)restService.post(restService.generateURL("localhost", p, "paxos", "prepare"), t).getBody();
-
-
-//                    Promise pr = (Promise) restService.post(restService.generateURL("localhost", p, "paxos", "prepare"), t).getBody();
-
-//                    System.out.println("is this null? " + (pr != null) + ", value is: " + pr.getPropsalId());
+                    LinkedHashMap<String, Object> receivedPromise = (LinkedHashMap<String, Object>)restService.post(url + "/paxos/prepare", t).getBody();
                     Promise promise = new Promise((boolean)receivedPromise.get("didPromise"), (long)receivedPromise.get("propsalId"));
-//
                     if(promise != null && promise.isDidPromise()){
                         promiseAccepted++;
                     }
@@ -83,11 +77,10 @@ public class PaxosController {
 
             executor = Executors.newFixedThreadPool(10);
 
-            for (int i=0; i<allPorts.size(); i++) {
-                Integer p = allPorts.get(i);
+            for (String url: allPorts) {
 
                 executor.execute(() -> {
-                    Long acceptedTID = (Long)restService.post(restService.generateURL("localhost", p, "paxos", "accept"), t).getBody();
+                    Long acceptedTID = (Long)restService.post(url + "/paxos/accept", t).getBody();
 
                     System.out.println("returned tid is: " + acceptedTID + " tid: " + t.getTransactionId() + Long.compare(acceptedTID, t.getTransactionId()));
                     if(acceptedTID != null){
@@ -114,8 +107,8 @@ public class PaxosController {
             executor = Executors.newFixedThreadPool(10);
 
             // consensus achieved all nodes accepted, now we go to learn phase
-            for (int i=0; i<allPorts.size(); i++) {
-                Integer p = allPorts.get(i);
+            for (String url: allPorts) {
+//                Integer p = allPorts.get(i);
 
                 executor.execute(() -> {
                     // learning phase
