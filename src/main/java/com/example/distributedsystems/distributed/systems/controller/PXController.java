@@ -6,6 +6,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.paxos.Promise;
 import com.example.distributedsystems.distributed.systems.model.Paxos;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import com.example.distributedsystems.distributed.systems.repository.PxRepository;
+import com.example.distributedsystems.distributed.systems.service.CartService;
 import com.example.distributedsystems.distributed.systems.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -36,6 +37,9 @@ public class PXController {
     @Autowired
     private TransactionService transactionService;
 
+    @Autowired
+    private CartService cartService;
+
     private int maxIdSeen = 0;
 
     private long maxTimeStampSeen;
@@ -65,6 +69,7 @@ public class PXController {
 
     @PostMapping("/accept")
     public ResponseEntity<Long> accept(@RequestBody PaxosTransaction transaction) {
+        //TODO: Hrashit added return type as Object
         if (Math.random() <= 0.1) {
             System.out.println("Node failed at port: " + serverProperties.getPort());
             return new ResponseEntity<>(Long.MIN_VALUE, HttpStatus.OK);
@@ -93,6 +98,18 @@ public class PXController {
                 returnBook(t);
                 break;
 
+            case LOAN:
+                loan(t);
+                break;
+
+            case DELETE_BOOK:
+                deleteBook(t);
+                break;
+
+            case DELETE_CART:
+                deleteCart(t);
+                break;
+
             default:
                 return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
@@ -107,5 +124,18 @@ public class PXController {
 
     public void returnBook(PaxosTransaction pt){
         transactionService.updateBookReturnedByTransactionId(pt.getTransactionId(), pt.getAllBooks().get(0));
+    }
+
+    public void loan(PaxosTransaction pt){
+        cartService.updateCartForUser(pt.getUserId(), pt.getAllBooks().get(0));
+    }
+
+    public void deleteBook(PaxosTransaction pt){
+        System.out.println("user: " + pt.getUserId() + ", isbn: " + pt.getAllBooks().get(0));
+        cartService.deleteBookFromCartForUser(pt.getUserId(), pt.getAllBooks().get(0));
+    }
+
+    public void deleteCart(PaxosTransaction pt){
+        cartService.deleteCartByUsername(pt.getUserId());
     }
 }

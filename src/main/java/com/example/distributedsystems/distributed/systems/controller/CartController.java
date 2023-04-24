@@ -1,5 +1,8 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosController;
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScenario;
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.model.cart.Cart;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBook;
@@ -14,12 +17,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})
 @RequestMapping("/cart")
-public class CartController {
+public class CartController extends PaxosController {
 
     //TODO: Cart Controller
     @Autowired
@@ -66,22 +70,35 @@ public class CartController {
     @PostMapping("/addBook")
     public ResponseEntity<Object> addBookToCart(@RequestBody CartRequest content) {
         // paxos here
-        System.out.println("add book: " + content);
-        cartService.updateCartForUser(content.getUsername(), content.getIsbn());
+
+        List<Long> list = new ArrayList<>();
+        list.add(content.getIsbn());
+        PaxosTransaction pt = new PaxosTransaction(content.getUsername(), list, PaxosScenario.LOAN);
+//        System.out.println("add book: " + content);
+//        cartService.updateCartForUser(content.getUsername(), content.getIsbn());
+        propose(pt);
         return new ResponseEntity<>(content.getIsbn(), HttpStatus.OK);
     }
 
     @DeleteMapping("/{username}/book/{isbn}")
     public ResponseEntity<Object> deleteBookFromCartForUser(@PathVariable String username, @PathVariable Long isbn) {
         // paxos here
-        cartService.deleteBookFromCartForUser(username, isbn);
+//        cartService.deleteBookFromCartForUser(username, isbn);
+
+        List<Long> list = new ArrayList<>();
+        list.add(isbn);
+        PaxosTransaction pt = new PaxosTransaction(username, list, PaxosScenario.DELETE_BOOK);
+        propose(pt);
         return new ResponseEntity<>(isbn, HttpStatus.OK);
     }
 
     @DeleteMapping("/{username}")
     public ResponseEntity<Object> deleteCartByUsername(@PathVariable String username) {
         // paxos here
-        cartService.deleteCartByUsername(username);
+
+        PaxosTransaction pt = new PaxosTransaction(username, PaxosScenario.DELETE_CART);
+//        cartService.deleteCartByUsername(username);
+        propose(pt);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
