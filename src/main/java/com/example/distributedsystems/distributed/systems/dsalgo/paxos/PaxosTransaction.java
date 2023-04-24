@@ -22,6 +22,12 @@ public class PaxosTransaction {
         this.scenario = scenario;
     }
 
+    public PaxosTransaction(Long transactionId, List<Long> allBooks, PaxosScenario scenario) {
+        this.transactionId = transactionId;
+        this.allBooks = allBooks;
+        this.scenario = scenario;
+    }
+
     public PaxosTransaction(String userId, List<Long> allBooks, PaxosScenario scenario) {
         this.userId = userId;
         this.allBooks = allBooks;

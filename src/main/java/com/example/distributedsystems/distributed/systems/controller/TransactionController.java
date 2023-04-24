@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -55,7 +56,13 @@ public class TransactionController extends PaxosController {
   public ResponseEntity<Object> markBookReturned(@PathVariable Long transactionId, @PathVariable Long bookId) {
     // 2. call paxos here and save the transaction in learners phase
     // tid, isbn, usename
-    transactionService.updateBookReturnedByTransactionId(transactionId, bookId);
+
+    List<Long> list = new ArrayList<>();
+    list.add(bookId);
+    PaxosTransaction pt = new PaxosTransaction(transactionId, list, PaxosScenario.RETURN);
+
+    propose(pt);
+//    transactionService.updateBookReturnedByTransactionId(transactionId, bookId);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
