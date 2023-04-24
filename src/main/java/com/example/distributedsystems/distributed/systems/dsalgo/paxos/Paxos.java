@@ -35,24 +35,14 @@ public class Paxos {
   @Autowired
   private RicartAgrawalaHandler ricartAgrawalaHandler;
 
-//  @Autowired
-//  private HazelcastInstance hazelcastInstance;
-//
-//  public void incrementRequestCount() {
-//    IAtomicLong requestCount = hazelcastInstance.getCPSubsystem().getAtomicLong("requestCount");
-//    requestCount.incrementAndGet();
-//  }
-//
-//  public long getRequestCount() {
-//    IAtomicLong requestCount = hazelcastInstance.getCPSubsystem().getAtomicLong("requestCount");
-//    return requestCount.get();
-//  }
-
-  int promiseAccepted = 0;
-  int nodesAccepted = 0;
+  AtomicInteger promiseAccepted = new AtomicInteger(0);
+  AtomicInteger nodesAccepted = new AtomicInteger(0);
 
   private void preparePhase(PaxosTransaction paxosTransaction, Set<String> allPorts) {
     System.out.println("Prepare phase");
+    String pid = System.currentTimeMillis() + serverPort + "";
+    System.out.println("pid is: " + pid);
+    paxosTransaction.setProposalId(System.currentTimeMillis() + serverPort);
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
     for (String url : allPorts) {
@@ -60,7 +50,7 @@ public class Paxos {
         LinkedHashMap<String, Object> receivedPromise = (LinkedHashMap<String, Object>) restService.post(url + "/paxos/prepare", paxosTransaction).getBody();
         Promise promise = new Promise((boolean) receivedPromise.get("didPromise"), (long) receivedPromise.get("propsalId"));
         if (promise != null && promise.isDidPromise()) {
-          promiseAccepted++;
+          promiseAccepted.incrementAndGet();
         }
       });
     }
@@ -71,9 +61,9 @@ public class Paxos {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
-    System.out.println("Number of promised got: " + promiseAccepted + ", allports: " + allPorts.size());
+    System.out.println("Number of promised got: " + promiseAccepted.get() + ", allports: " + allPorts.size());
     // Failed to reach consensus
-    if(promiseAccepted <= allPorts.size()/2){
+    if(promiseAccepted.get() <= allPorts.size()/2){
       System.out.println("failed to reach consensus for the transaction: " + paxosTransaction.getTransactionId() + " in prepare phase");
     }
   }
@@ -85,16 +75,17 @@ public class Paxos {
 
     for (String url : allPorts) {
       executor.execute(() -> {
-        Long acceptedTID = (Long) restService.post(url + "/paxos/accept", paxosTransaction).getBody();
-        if (acceptedTID != null) {
-          nodesAccepted++;
+        long acceptedTID = (long)restService.post(url + "/paxos/accept", paxosTransaction).getBody();
+        System.out.println("accepted id is: " + acceptedTID);
+        if(acceptedTID != Long.MIN_VALUE){
+          nodesAccepted.incrementAndGet();
         }
       });
     }
-    System.out.println("number of nodes accepted: " + nodesAccepted + ", total: " + allPorts.size());
-    executor.shutdown();
+    System.out.println("number of nodes accepted: " + nodesAccepted.get() + ", total: " + allPorts.size());
+    executor.shutdown(); // To execute the above tasks, which is to send the commit message to all the replica together and not one after other.
     try {
-      executor.awaitTermination(10, TimeUnit.SECONDS);
+      executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
@@ -119,6 +110,45 @@ public class Paxos {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private void requestLocksFromAllInstances(PaxosScenario operation) {
+    System.out.println("Request lock phase");
+
+    Set<String> allPorts = nodeRegistry.getActiveNodes();
+
+    while (true) {
+      long timestamp = System.currentTimeMillis();
+      int requestCountForOperation = ricartAgrawalaHandler.getAndIncrementRequestCount(operation.toString());
+      RicartAgrawalaRequest request = new RicartAgrawalaRequest(timestamp, requestCountForOperation, operation.toString());
+
+      boolean allLocksAcquired = allPorts.stream()
+              .map(port -> "http://localhost:" + port + "/ricartAgrawala/request/" + operation.toString())
+              .map(url -> restService.post(url, request))
+              .allMatch(response -> Boolean.TRUE.equals(response.getBody()));
+
+      if (allLocksAcquired) {
+        System.out.println("All locks acquired");
+        break;
+      }
+
+      try {
+        Thread.sleep(10);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  private void releaseLocksFromAllInstances(PaxosScenario operation) {
+    System.out.println("Release lock phase");
+
+    Set<String> allPorts = nodeRegistry.getActiveNodes();
+    RicartAgrawalaRelease release = new RicartAgrawalaRelease(operation.toString());
+
+    allPorts.stream()
+            .map(port -> "http://localhost:" + port + "/ricartAgrawala/release/" + operation.toString())
+            .forEach(url -> restService.post(url, release));
   }
 
   private void requestLock(PaxosScenario operation) {
@@ -152,7 +182,7 @@ public class Paxos {
       Set<String> allPorts = nodeRegistry.getActiveNodes();
 
       // Ricart-Agrawala Algorithm - Request phase
-      requestLock(paxosTransaction.getScenario());
+      requestLocksFromAllInstances(paxosTransaction.getScenario());
 
       // Paxos Algorithm
       preparePhase(paxosTransaction, allPorts);
@@ -160,7 +190,7 @@ public class Paxos {
       learnPhase(paxosTransaction, allPorts);
 
       // Ricart-Agrawala Algorithm - Release phase
-      releaseLock(paxosTransaction.getScenario());
+      releaseLocksFromAllInstances(paxosTransaction.getScenario());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

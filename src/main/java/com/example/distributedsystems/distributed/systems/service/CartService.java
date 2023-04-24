@@ -43,7 +43,6 @@ public class CartService {
     return cartDTOs;
   }
 
-
   public List<CartBookId> getAllCartBooks() {
     List<CartBook> cartsBooks = (List<CartBook>) cartBookInterface.findAll();
     List<CartBookId> cartBookIds = new ArrayList<>();
