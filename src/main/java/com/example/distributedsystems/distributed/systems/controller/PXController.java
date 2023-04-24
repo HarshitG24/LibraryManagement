@@ -6,6 +6,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.paxos.Promise;
 import com.example.distributedsystems.distributed.systems.model.Paxos;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import com.example.distributedsystems.distributed.systems.repository.PxRepository;
+import com.example.distributedsystems.distributed.systems.service.CartService;
 import com.example.distributedsystems.distributed.systems.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -35,6 +36,9 @@ public class PXController {
 
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private CartService cartService;
 
     private int maxIdSeen = 0;
 
@@ -91,6 +95,11 @@ public class PXController {
 
             case RETURN:
                 returnBook(t);
+                break;
+
+            case LOAN:
+                loan(t);
+                break;
 
 
             default:
@@ -107,5 +116,9 @@ public class PXController {
 
     public void returnBook(PaxosTransaction pt){
         transactionService.updateBookReturnedByTransactionId(pt.getTransactionId(), pt.getAllBooks().get(0));
+    }
+
+    public void loan(PaxosTransaction pt){
+        cartService.updateCartForUser(pt.getUserId(), pt.getAllBooks().get(0));
     }
 }

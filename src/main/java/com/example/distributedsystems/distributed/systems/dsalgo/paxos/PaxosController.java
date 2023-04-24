@@ -117,7 +117,8 @@ public class PaxosController {
 
                 executor.execute(() -> {
                     // learning phase
-                    restService.post(url + "/paxos/learn", t);
+                    Boolean ans = (Boolean) restService.post(url + "/paxos/learn", t).getBody();
+                    System.out.println("ans is: " + ans);
                 });
             }
 
