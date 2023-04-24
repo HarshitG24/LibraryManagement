@@ -18,12 +18,4 @@ public interface CartInterface extends CrudRepository<Cart, Integer> {
     void deleteCartByUsername(@Param("username") String username);
 
     Cart findByUsername(String username);
-
-//    Cart updateBooksByUsername(Cart c);
-
-//    @Modifying
-//    @Transactional
-//    @Query("DELETE FROM Cart c WHERE c.isbn = :isbn AND c.username = :username")
-//    void deleteCartByUsernameAndIsbn(String username, Long isbn);
-
 }

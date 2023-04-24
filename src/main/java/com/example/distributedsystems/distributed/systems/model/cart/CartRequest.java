@@ -24,4 +24,12 @@ public class CartRequest {
     public void setIsbn(Long isbn) {
         this.isbn = isbn;
     }
+
+    @Override
+    public String toString() {
+        return "CartRequest{" +
+                "username='" + username + '\'' +
+                ", isbn=" + isbn +
+                '}';
+    }
 }

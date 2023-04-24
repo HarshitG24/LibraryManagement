@@ -3,6 +3,9 @@ package com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala
 public class RicartAgrawalaRelease {
   private String operation;
 
+  public RicartAgrawalaRelease() {
+  }
+
   public RicartAgrawalaRelease(String operation) {
     this.operation = operation;
   }

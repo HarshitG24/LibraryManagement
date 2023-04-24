@@ -1,11 +1,11 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
-import com.example.distributedsystems.distributed.systems.coordinator.RestService;
-import com.example.distributedsystems.distributed.systems.dsalgo.paxos.Paxos;
-import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosController;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.service.BookService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,36 +19,34 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})
 @RequestMapping("/book")
-public class BookController extends Paxos {
+public class BookController extends PaxosController {
+  private static final Logger logger = LoggerFactory.getLogger(BookController.class);
 
   @Autowired
   private BookService bookService;
 
-  @Autowired
-  private RestService restService;
-
   @GetMapping("")
   public ResponseEntity<List<Book>> getAllBooks() {
+    logger.info("Get all books request received.");
     List<Book> books = bookService.getAllBooks();
     return new ResponseEntity<>(books, HttpStatus.OK);
   }
 
   @GetMapping("/{isbn}")
   public ResponseEntity<Book> getBookByIsbn(@PathVariable("isbn") Long isbn) {
+    logger.info("Get book by ISBN request received. ISBN: " + isbn);
     Book book = bookService.getBookByIsbn(isbn);
-    System.out.println("Book:" + book);
     return new ResponseEntity<>(book, HttpStatus.OK);
   }
 
   @PostMapping("/createBook")
   public ResponseEntity<Book> createBook(@RequestBody Book book) {
-    System.out.println("create book: " + book);
+    logger.info("Create book request received. Book: " + book);
     Book result = bookService.createBook(book);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
@@ -56,6 +54,7 @@ public class BookController extends Paxos {
   @PutMapping("/{isbn}/{operation}")
   public ResponseEntity<Object> updateBookInventoryByIsbn(
           @PathVariable("isbn") Long isbn, @RequestParam("operation") String operation) {
+    logger.info("Update book inventory request received. Operation: " + operation);
     int rowsAffected = bookService.updateBookInventoryByIsbn(isbn, operation);
     if (rowsAffected > 0) {
       return new ResponseEntity<>(HttpStatus.OK);

@@ -40,8 +40,6 @@ public class RicartAgrawalaHandler {
   }
 
   public boolean request(String operation, RicartAgrawalaRequest request) {
-    System.out.println("Inside RA handler lock request");
-
     AtomicBoolean lock = operationLocks.get(operation);
     AtomicInteger requestCount = operationRequestCounts.get(operation);
     AtomicLong timestamp = operationTimestamps.get(operation);
@@ -55,7 +53,7 @@ public class RicartAgrawalaHandler {
         timestamp.set(request.getTimestamp());
         return true;
       } else {
-        // Check whether the incoming request has a higher priority than the existing request in the queue based on timestamp and request count
+        // Check whether the incoming request has a higher priority than the current lock holder based on timestamp and request count
         boolean hasHigherPriority = (request.getTimestamp() < timestamp.get())
                 || (request.getTimestamp() == timestamp.get() && request.getRequestCount() < requestCount.get());
 
@@ -75,8 +73,6 @@ public class RicartAgrawalaHandler {
   }
 
   public void release(String operation, RicartAgrawalaRelease release) {
-    System.out.println("Inside RA handler release");
-
     AtomicBoolean lock = operationLocks.get(operation);
     Queue<RicartAgrawalaRequest> waitingQueue = operationWaitingQueues.get(operation);
 

@@ -86,6 +86,7 @@ public class PaxosTransaction {
                 ", userId='" + userId + '\'' +
                 ", allBooks=" + allBooks +
                 ", scenario=" + scenario +
+                ", proposalId=" + proposalId +
                 '}';
     }
 }

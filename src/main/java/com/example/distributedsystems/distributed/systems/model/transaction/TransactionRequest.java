@@ -31,4 +31,13 @@ public class TransactionRequest {
   public void setBookIds(List<Long> bookIds) {
     this.bookIds = bookIds;
   }
+
+  @Override
+  public String toString() {
+    return "TransactionRequest{" +
+            "transactionId=" + transactionId +
+            ", username='" + username + '\'' +
+            ", bookIds=" + bookIds +
+            '}';
+  }
 }

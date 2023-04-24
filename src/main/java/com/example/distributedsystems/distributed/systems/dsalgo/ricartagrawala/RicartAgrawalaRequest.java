@@ -5,6 +5,10 @@ public class RicartAgrawalaRequest {
   private int requestCount;
   private String operation;
 
+  public RicartAgrawalaRequest() {
+
+  }
+
   public RicartAgrawalaRequest(long timestamp, int requestCount, String operation) {
     this.timestamp = timestamp;
     this.requestCount = requestCount;
