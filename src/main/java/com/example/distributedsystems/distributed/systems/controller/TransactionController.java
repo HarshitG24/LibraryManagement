@@ -1,6 +1,6 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
-import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosController;
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.Paxos;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScenario;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})
 @RequestMapping("/transaction")
-public class TransactionController extends PaxosController {
+public class TransactionController extends Paxos {
 
   @Autowired
   private TransactionService transactionService;
@@ -44,9 +44,18 @@ public class TransactionController extends PaxosController {
 //    Transaction savedTransaction = transactionService.createTransaction(transaction);
 
     // 1. call paxos here and save the transaction in learners phase
-    PaxosTransaction pt = new PaxosTransaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIds(), PaxosScenario.CHECKOUT);
-//    return ResponseEntity.ok(savedTransaction);
-    propose(pt);
+    PaxosTransaction paxosTransaction = new PaxosTransaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIds(), PaxosScenario.CHECKOUT);
+    System.out.println("Create transaction");
+    System.out.println("PaxosTransaction: " + paxosTransaction.toString());
+
+    try {
+      System.out.println("Try proposing");
+      propose(paxosTransaction);
+    } catch (Exception e) {
+      System.out.println("Exception when proposing");
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+    }
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

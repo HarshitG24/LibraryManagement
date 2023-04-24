@@ -60,7 +60,7 @@ public class PXController {
     }
 
     @PostMapping("/accept")
-    public ResponseEntity<Object> accept(@RequestBody PaxosTransaction transaction) {
+    public ResponseEntity<Long> accept(@RequestBody PaxosTransaction transaction) {
         if (Math.random() <= 0.1) {
             System.out.println("Node failed at port: " + serverProperties.getPort());
             return new ResponseEntity<>(Long.MIN_VALUE, HttpStatus.OK);

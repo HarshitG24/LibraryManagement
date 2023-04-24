@@ -1,7 +1,7 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
 import com.example.distributedsystems.distributed.systems.coordinator.RestService;
-import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosController;
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.Paxos;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.service.BookService;
@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})
 @RequestMapping("/book")
-public class BookController extends PaxosController {
+public class BookController extends Paxos {
 
   @Autowired
   private BookService bookService;

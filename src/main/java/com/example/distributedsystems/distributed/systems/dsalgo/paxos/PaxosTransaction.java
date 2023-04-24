@@ -49,4 +49,14 @@ public class PaxosTransaction {
     public void setScenario(PaxosScenario scenario) {
         this.scenario = scenario;
     }
+
+    @Override
+    public String toString() {
+        return "PaxosTransaction{" +
+                "transactionId=" + transactionId +
+                ", userId='" + userId + '\'' +
+                ", allBooks=" + allBooks +
+                ", scenario=" + scenario +
+                '}';
+    }
 }
