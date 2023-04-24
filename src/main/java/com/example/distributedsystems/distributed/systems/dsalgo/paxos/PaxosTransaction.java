@@ -28,6 +28,11 @@ public class PaxosTransaction {
         this.scenario = scenario;
     }
 
+    public PaxosTransaction(String userId, PaxosScenario scenario) {
+        this.userId = userId;
+        this.scenario = scenario;
+    }
+
     public Long getTransactionId() {
         return transactionId;
     }

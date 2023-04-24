@@ -105,6 +105,10 @@ public class PXController {
                 deleteBook(t);
                 break;
 
+            case DELETE_CART:
+                deleteCart(t);
+                break;
+
             default:
                 return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
@@ -126,6 +130,11 @@ public class PXController {
     }
 
     public void deleteBook(PaxosTransaction pt){
+        System.out.println("user: " + pt.getUserId() + ", isbn: " + pt.getAllBooks().get(0));
         cartService.deleteBookFromCartForUser(pt.getUserId(), pt.getAllBooks().get(0));
+    }
+
+    public void deleteCart(PaxosTransaction pt){
+        cartService.deleteCartByUsername(pt.getUserId());
     }
 }

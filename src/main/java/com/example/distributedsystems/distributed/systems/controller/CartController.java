@@ -87,7 +87,7 @@ public class CartController extends PaxosController {
 
         List<Long> list = new ArrayList<>();
         list.add(isbn);
-        PaxosTransaction pt = new PaxosTransaction(username, list, PaxosScenario.LOAN);
+        PaxosTransaction pt = new PaxosTransaction(username, list, PaxosScenario.DELETE_BOOK);
         propose(pt);
         return new ResponseEntity<>(isbn, HttpStatus.OK);
     }
@@ -95,7 +95,10 @@ public class CartController extends PaxosController {
     @DeleteMapping("/{username}")
     public ResponseEntity<Object> deleteCartByUsername(@PathVariable String username) {
         // paxos here
-        cartService.deleteCartByUsername(username);
+
+        PaxosTransaction pt = new PaxosTransaction(username, PaxosScenario.DELETE_CART);
+//        cartService.deleteCartByUsername(username);
+        propose(pt);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
