@@ -101,6 +101,9 @@ public class PXController {
                 loan(t);
                 break;
 
+            case DELETE_BOOK:
+                deleteBook(t);
+                break;
 
             default:
                 return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
@@ -120,5 +123,9 @@ public class PXController {
 
     public void loan(PaxosTransaction pt){
         cartService.updateCartForUser(pt.getUserId(), pt.getAllBooks().get(0));
+    }
+
+    public void deleteBook(PaxosTransaction pt){
+        cartService.deleteBookFromCartForUser(pt.getUserId(), pt.getAllBooks().get(0));
     }
 }

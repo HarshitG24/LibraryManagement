@@ -36,6 +36,7 @@ public class PaxosController {
 
             String pid = System.currentTimeMillis() + serverProperties.getPort() + "";
             System.out.println("pid is: " + pid);
+//            TODO: CHECK IF WE NEED TO ADD PORT NUMBER OR NOT
             t.setProposalId(System.currentTimeMillis() + serverProperties.getPort().longValue());
 
             // 1. we store the active list of ports, the quorum
