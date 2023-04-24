@@ -36,7 +36,9 @@ public class PXController {
     @Autowired
     private TransactionService transactionService;
 
-    private long maxIdSeen = 0L;
+    private int maxIdSeen = 0;
+
+    private long maxTimeStampSeen;
 
     @PostMapping("/prepare")
     public ResponseEntity<Object> prepare(@RequestBody PaxosTransaction transaction) {
@@ -46,16 +48,18 @@ public class PXController {
             return new ResponseEntity<>(new Promise(false, Long.MIN_VALUE), HttpStatus.OK);
         }
 
+        System.out.println("max id seen is: " + maxTimeStampSeen + ", pid is: " + transaction.getProposalId());
+
 //        Paxos paxos = repository.getById(1);
-        if (transaction.getTransactionId() > maxIdSeen) {
+        if (transaction.getProposalId() > maxTimeStampSeen) {
 //            paxos.setMinId(transaction.getTransactionId());
 //            repository.save(paxos);
-            maxIdSeen = transaction.getTransactionId();
+            maxTimeStampSeen = transaction.getProposalId();
             System.out.println("Got Preparation request for " + transaction.getTransactionId() + " at port: " + serverProperties.getPort() + "Promised ");
-            return new ResponseEntity<>(new Promise(true, transaction.getTransactionId()), HttpStatus.OK);
+            return new ResponseEntity<>(new Promise(true, transaction.getProposalId()), HttpStatus.OK);
         } else {
             System.out.println("Got Preparation request for " + transaction.getTransactionId() + " at port: " + serverProperties.getPort() + ": Denied");
-            return new ResponseEntity<>(new Promise(false, 0), HttpStatus.OK);
+            return new ResponseEntity<>(new Promise(false, Long.MIN_VALUE), HttpStatus.OK);
         }
     }
 
@@ -67,11 +71,11 @@ public class PXController {
         }
 
 //        Paxos paxos = repository.getById(1);
-        if (transaction.getTransactionId() >= maxIdSeen) {
+        if (transaction.getProposalId() >= maxIdSeen) {
 //            paxos.setMinId(transaction.getTransactionId());
 //            repository.save(paxos);
             System.out.println("Got accept request for " + transaction.getTransactionId() + " at port: " + serverProperties.getPort() + ": Accepted");
-            return new ResponseEntity<>(transaction.getTransactionId(), HttpStatus.OK);
+            return new ResponseEntity<>(transaction.getProposalId(), HttpStatus.OK);
         } else {
             System.out.println("Got accept request for " + transaction.getTransactionId() + " at port: " + serverProperties.getPort() + ": Rejected");
             return new ResponseEntity<>(Long.MIN_VALUE, HttpStatus.OK);
@@ -82,9 +86,11 @@ public class PXController {
     public ResponseEntity<Object> learn(@RequestBody PaxosTransaction t) {
         switch (t.getScenario()){
             case CHECKOUT:
-                // do something
                 checkout(t);
                 break;
+
+            case RETURN:
+                returnBook(t);
 
 
             default:
@@ -97,5 +103,9 @@ public class PXController {
         Transaction transaction = new Transaction(pt.getTransactionId(), pt.getUserId(), pt.getAllBooks());
         Transaction savedTransaction = transactionService.createTransaction(transaction);
         transactionService.createTransaction(savedTransaction);
+    }
+
+    public void returnBook(PaxosTransaction pt){
+        transactionService.updateBookReturnedByTransactionId(pt.getTransactionId(), pt.getAllBooks().get(0));
     }
 }

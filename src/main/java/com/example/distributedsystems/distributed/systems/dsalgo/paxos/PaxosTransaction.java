@@ -11,6 +11,9 @@ public class PaxosTransaction {
 
     private PaxosScenario scenario;
 
+    private long proposalId;
+
+
     public PaxosTransaction(Long transactionId, String userId, List<Long> allBooks, PaxosScenario scenario) {
         this.transactionId = transactionId;
         this.userId = userId;
@@ -48,6 +51,14 @@ public class PaxosTransaction {
 
     public void setScenario(PaxosScenario scenario) {
         this.scenario = scenario;
+    }
+
+    public long getProposalId() {
+        return proposalId;
+    }
+
+    public void setProposalId(long proposalId) {
+        this.proposalId = proposalId;
     }
 
     @Override
