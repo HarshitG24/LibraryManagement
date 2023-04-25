@@ -30,7 +30,14 @@ public class BookService {
     bookInterface.deleteAllByIsbn(isbn);
   }
 
-  public int updateBookInventoryByIsbn(Long isbn, int inventory) {
+  public int updateBookInventoryByIsbn(Long isbn, String operation) {
+    Book book = bookInterface.getBookByIsbn(isbn);
+    int inventory = book.getInventory();
+    if (operation.equalsIgnoreCase("LOAN")) {
+      inventory = -1;
+    } else if (operation.equalsIgnoreCase("RETURN")) {
+      inventory = 1;
+    }
     return bookInterface.updateBookInventoryByIsbn(isbn, inventory);
   }
 }

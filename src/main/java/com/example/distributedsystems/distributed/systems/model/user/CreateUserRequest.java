@@ -100,4 +100,21 @@ public class CreateUserRequest {
   public void setZipcode(String zipcode) {
     this.zipcode = zipcode;
   }
+
+  @Override
+  public String toString() {
+    return "CreateUserRequest{" +
+            "firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", email='" + email + '\'' +
+            ", password='" + password + '\'' +
+            ", username='" + username + '\'' +
+            ", phone='" + phone + '\'' +
+            ", address1='" + address1 + '\'' +
+            ", address2='" + address2 + '\'' +
+            ", city='" + city + '\'' +
+            ", state='" + state + '\'' +
+            ", zipcode='" + zipcode + '\'' +
+            '}';
+  }
 }

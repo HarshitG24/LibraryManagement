@@ -12,7 +12,10 @@ import com.example.distributedsystems.distributed.systems.repository.CartInterfa
 import com.example.distributedsystems.distributed.systems.repository.TransactionInterface;
 import com.example.distributedsystems.distributed.systems.repository.UserInterface;
 import com.example.distributedsystems.distributed.systems.service.CartBookInterface;
+import com.hazelcast.core.HazelcastInstance;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -24,12 +27,14 @@ import org.springframework.web.client.RestTemplate;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Service
 public class NodeManager {
+    private static final Logger logger = LoggerFactory.getLogger(NodeManager.class);
+
     @Value("${server.port}")
     private int serverPort;
 
@@ -43,6 +48,11 @@ public class NodeManager {
 
     @Autowired
     private NodeRegistry nodeRegistry;
+
+    @Autowired
+    private HazelcastInstance hazelcastInstance;
+
+    private UUID lifecycleListenerId;
 
     public NodeManager( ) {
 
@@ -74,10 +84,11 @@ public class NodeManager {
     }
 
     public void startNode() {
-        // Register the node with the central registry
+        // Register the node
         String nodeAddress = getNodeAddress();
-        nodeRegistry.registerNode(nodeAddress);
-        System.out.println("Active nodes for port " + serverPort + ": " + nodeRegistry.getActiveNodes());
+        logger.info("Registering node");
+        lifecycleListenerId = nodeRegistry.registerNode(nodeAddress);
+        logger.info("Current active nodes for port " + serverPort + ": " + nodeRegistry.getActiveNodes());
 
         // Synchronize data from an existing node
         String existingNodeAddress = getAnExistingNodeAddress();
@@ -87,14 +98,20 @@ public class NodeManager {
     }
 
     public void stopNode() {
-        // Deregister the node from the central registry
+        // Unregister the node
+        logger.info("Unregistering node");
         String nodeAddress = getNodeAddress();
-        nodeRegistry.unregisterNode(nodeAddress);
+        logger.info("Stopping node");
+        if (lifecycleListenerId != null) {
+            hazelcastInstance.getLifecycleService().removeLifecycleListener(lifecycleListenerId);
+        }
+        logger.info("Current Active Nodes: " + nodeRegistry.getActiveNodes());
     }
 
 
     public void synchronizeDataFromNode(String nodeAddress) {
 
+        logger.info("Synchronizing data from existing node: " + nodeAddress);
         // User
         ResponseEntity<List<User>> userResponse = restTemplate.exchange(
                 nodeAddress + "/user",
@@ -121,7 +138,6 @@ public class NodeManager {
                 new ParameterizedTypeReference<List<CartDTO>>() {}
         );
         List<CartDTO> cartData = cartResponse.getBody();
-        System.out.println("CartData response: " + cartData);
 
 
         // CartBook
@@ -166,16 +182,11 @@ public class NodeManager {
             }
         }
 
-//        // CartBook
-//        if (cartBookData != null) {
-//            cartBookRepository.saveAll(cartBookData);
-//        }
-
         // Transaction
         if (transactionData != null) {
             transactionRepository.saveAll(transactionData);
         }
-
+        logger.info("Data Synchronization complete!");
     }
 
     public String getAnExistingNodeAddress() {

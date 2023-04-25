@@ -2,22 +2,22 @@ package com.example.distributedsystems.distributed.systems.dsalgo.paxos;
 
 public class Promise {
 
-    private boolean didPromise; // to determine if the promise was accepted or not
-    private long propsalId; // to determine the proposal id which was accepted
+    private final boolean didPromise; // to determine if the promise was accepted or not
+    private final long proposalId; // to determine the proposal id which was accepted
 
     /**
      * Constructor
      * @param didPromise - boolean if promise was accepted
-     * @param propsalId - the id which was accepted
+     * @param proposalId - the id which was accepted
      */
-    public Promise(boolean didPromise, long propsalId) {
+    public Promise(boolean didPromise, long proposalId) {
         this.didPromise = didPromise;
-        this.propsalId = propsalId;
+        this.proposalId = proposalId;
     }
 
     /**
      * getter method to return the value of promise accepted or not
-     * @return
+     * @return true if promised, otherwise false
      */
     public boolean isDidPromise() {
         return didPromise;
@@ -25,10 +25,10 @@ public class Promise {
 
     /**
      * getter method to return the  proposal id
-     * @return
+     * @return proposal id
      */
-    public long getPropsalId() {
-        return propsalId;
+    public long getProposalId() {
+        return proposalId;
     }
 }
 
