@@ -2,6 +2,8 @@ package com.example.distributedsystems.distributed.systems.dsalgo.twopc;
 
 import com.example.distributedsystems.distributed.systems.coordinator.RestService;
 import com.example.distributedsystems.distributed.systems.model.user.User;
+import com.example.distributedsystems.distributed.systems.node.NodeManager;
+import com.example.distributedsystems.distributed.systems.node.NodeRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 public class TwoPCController {
     @Autowired
     RestService restService;
+
+    @Autowired
+    NodeRegistry nodeRegistry;
 
     int ackCount  = 0;
 
@@ -32,24 +37,29 @@ public class TwoPCController {
 
             System.out.println("port is: " + serverProperties.getPort());
 
-            List<LinkedHashMap<String, Object>> server_list = (List<LinkedHashMap<String, Object>>) restService.get(restService.generateURL("localhost", serverProperties.getPort(), "server","allServers"), null).getBody();
-            for(LinkedHashMap<String, Object> a: server_list){
-//                for(Map.Entry<String, Object> en: a.entrySet()){
-//                    System.out.println(" key: " + en.getKey() + ", value is: " +  en.getValue());
-//                }
-                allPorts.add(Integer.parseInt(a.get("port").toString()));
-
-                System.out.println("port number is: " + a.get("port"));
+            Set<String> ports = nodeRegistry.getActiveNodes();
+            for(String a:ports){
+                System.out.println("port address is:"+a);
             }
+
+//            List<LinkedHashMap<String, Object>> server_list = (List<LinkedHashMap<String, Object>>) restService.get(restService.generateURL("localhost", serverProperties.getPort(), "server","allServers"), null).getBody();
+//            for(LinkedHashMap<String, Object> a: server_list){
+////                for(Map.Entry<String, Object> en: a.entrySet()){
+////                    System.out.println(" key: " + en.getKey() + ", value is: " +  en.getValue());
+////                }
+//                allPorts.add(Integer.parseInt(a.get("port").toString()));
+//
+//                System.out.println("port number is: " + a.get("port"));
+//            }
 
             ExecutorService executor = Executors.newFixedThreadPool(10);
 
             // ack phase
-            for (int i=0; i<allPorts.size(); i++) {
-                Integer p = allPorts.get(i);
+            for(String a:ports){
+
 
                 executor.execute(() -> {
-                    boolean acks = (boolean) restService.get(restService.generateURL("localhost", p, "server","cancommit"), null).getBody();
+                    boolean acks = (boolean) restService.get(a+"/server/cancommit", null).getBody();
 
                     System.out.println("qaz: " +  acks);
 
@@ -66,7 +76,7 @@ public class TwoPCController {
                 throw new RuntimeException(e);
             }
 
-            if(ackCount != server_list.size()){
+            if(ackCount != ports.size()){
                 System.out.println("fail to reach consensus");
             }
 
@@ -74,15 +84,15 @@ public class TwoPCController {
 
             executor = Executors.newFixedThreadPool(10);
 
-            for (int i=0; i<allPorts.size(); i++) {
-                Integer p = allPorts.get(i);
+            for(String a:ports){
+
 
                 executor.execute(() -> {
-                    boolean acks = (boolean) restService.post(restService.generateURL("localhost", p, "server","docommit"), emp).getBody();
+                    boolean acks = (boolean) restService.post(a+"/server/docommit", emp).getBody();
 
-                    if(acks){
-                        System.out.println("saved data on port: " + p);
-                    }
+//                    if(acks){
+//                        System.out.println("saved data on port: " + p);
+//                    }
                 });
             }
 
