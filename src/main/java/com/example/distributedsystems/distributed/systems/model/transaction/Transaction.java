@@ -1,6 +1,7 @@
 package com.example.distributedsystems.distributed.systems.model.transaction;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ public class Transaction {
   @Id
   private Long transactionId;
   private String username;
+  private Long transactionDate;
 
   @ElementCollection
   private final Map<Long, Boolean> bookStatus = new HashMap<>();
@@ -30,9 +32,18 @@ public class Transaction {
     for (Long bookId: bookLoanIds) {
       this.bookStatus.put(bookId, false);
     }
+    this.transactionDate = new Date().getTime();
   }
 
   public Transaction() {
+  }
+
+  public Long getTransactionDate() {
+    return transactionDate;
+  }
+
+  public void setTransactionDate(Long transactionDate) {
+    this.transactionDate = transactionDate;
   }
 
   public void setTransactionId(Long transactionId) {

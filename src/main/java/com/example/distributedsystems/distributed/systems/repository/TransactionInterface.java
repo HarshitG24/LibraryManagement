@@ -1,6 +1,7 @@
 package com.example.distributedsystems.distributed.systems.repository;
 
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
+import com.example.distributedsystems.distributed.systems.model.transaction.TransactionResponse;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.CrudRepository;
@@ -13,7 +14,7 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface TransactionInterface extends CrudRepository<Transaction, Long> {
-  List<Transaction> getAllByUsername(String username);
+  List<Transaction> findAllByUsername(String username);
   Transaction getTransactionByTransactionId(Long transactionId);
 
   @Modifying
@@ -25,24 +26,32 @@ public interface TransactionInterface extends CrudRepository<Transaction, Long> 
   }
 
   @Transactional
-  default List<Long> getUnreturnedBookIdsByUsername(String username) {
-    List<Long> unreturnedBookIds = new ArrayList<>();
-    List<Transaction> transactions = getAllByUsername(username);
+  default List<TransactionResponse> getUnreturnedBookIdsByUsername(String username) {
+    List<Transaction> transactions = findAllByUsername(username);
+    List<TransactionResponse> bookIsbnsByTransaction = new ArrayList<>();
     for (Transaction transaction : transactions) {
       List<Long> transactionUnreturnedBookIds = transaction.getAllUnreturnedBooks();
-      unreturnedBookIds.addAll(transactionUnreturnedBookIds);
+      List<Long> unreturnedBookIds = new ArrayList<>(transactionUnreturnedBookIds);
+      if (!unreturnedBookIds.isEmpty()) {
+        TransactionResponse response = new TransactionResponse(transaction.getTransactionId(), transaction.getTransactionDate(), unreturnedBookIds, username);
+        bookIsbnsByTransaction.add(response);
+      }
     }
-    return unreturnedBookIds;
+    return bookIsbnsByTransaction;
   }
 
   @Transactional
-  default List<Long> getReturnedBookIdsByUsername(String username) {
-    List<Long> returnedBookIds = new ArrayList<>();
-    List<Transaction> transactions = getAllByUsername(username);
+  default List<TransactionResponse> getReturnedBookIdsByUsername(String username) {
+    List<Transaction> transactions = findAllByUsername(username);
+    List<TransactionResponse> bookIsbnsByTransaction = new ArrayList<>();
     for (Transaction transaction : transactions) {
       List<Long> transactionUnreturnedBookIds = transaction.getAllReturnedBooks();
-      returnedBookIds.addAll(transactionUnreturnedBookIds);
+      List<Long> returnedBookIds = new ArrayList<>(transactionUnreturnedBookIds);
+      if (!returnedBookIds.isEmpty()) {
+        TransactionResponse response = new TransactionResponse(transaction.getTransactionId(), transaction.getTransactionDate(), returnedBookIds, username);
+        bookIsbnsByTransaction.add(response);
+      }
     }
-    return returnedBookIds;
+    return bookIsbnsByTransaction;
   }
 }

@@ -117,7 +117,7 @@ public class PaxosController {
     }
     // Failed to reach consensus
     if(nodesAccepted.get() <= allNodes.size()/2){
-      System.out.println("failed to reach consensus for the transaction: " + paxosTransaction.getTransactionId() + " in accept");
+      logger.error("Failed to reach consensus to accept transaction: " + paxosTransaction.getTransactionId());
     } else {
       // Call learn phase
       learnPhase(paxosTransaction);

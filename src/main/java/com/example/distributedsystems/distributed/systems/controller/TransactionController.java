@@ -7,6 +7,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTran
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaHandler;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import com.example.distributedsystems.distributed.systems.model.transaction.TransactionRequest;
+import com.example.distributedsystems.distributed.systems.model.transaction.TransactionResponse;
 import com.example.distributedsystems.distributed.systems.service.TransactionService;
 
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class TransactionController extends PaxosController {
   public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequest transactionRequest) {
     logger.info("Create transaction request received. " + transactionRequest);
     // Used Paxos for consensus
-    PaxosTransaction paxosTransaction = new PaxosTransaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIds(), PaxosScenario.CHECKOUT);
+    PaxosTransaction paxosTransaction = new PaxosTransaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIsbns(), PaxosScenario.CHECKOUT);
     try {
       propose(paxosTransaction);
     } catch (Exception e) {
@@ -73,20 +74,20 @@ public class TransactionController extends PaxosController {
   }
 
   @GetMapping("/unreturned/{username}")
-  public ResponseEntity<List<Long>> getAllUnreturnedBooksByUserId(@PathVariable String username) {
+  public ResponseEntity<List<TransactionResponse>> getAllUnreturnedBooksByUserId(@PathVariable String username) {
     logger.info("Get all unreturned books request received for User: " + username);
-    List<Long> unreturnedBookIds = transactionService.getAllUnreturnedBooksByUsername(username);
+    List<TransactionResponse> unreturnedBookIds = transactionService.getAllUnreturnedBooksByUsername(username);
     return new ResponseEntity<>(unreturnedBookIds, HttpStatus.OK);
   }
 
   @GetMapping("/returned/{username}")
-  public ResponseEntity<List<Long>> getAllReturnedBooksByUserId(@PathVariable String username) {
+  public ResponseEntity<List<TransactionResponse>> getAllReturnedBooksByUserId(@PathVariable String username) {
     logger.info("Get all returned books request received for User: " + username);
-    List<Long> returnedBookIds = transactionService.getAllReturnedBooksByUsername(username);
-    return new ResponseEntity<>(returnedBookIds, HttpStatus.OK);
+    List<TransactionResponse> returnedBookIsbnsByTransaction = transactionService.getAllReturnedBooksByUsername(username);
+    return new ResponseEntity<>(returnedBookIsbnsByTransaction, HttpStatus.OK);
   }
 
-  @GetMapping("/userId/{username}")
+  @GetMapping("/{username}")
   public ResponseEntity<List<Transaction>> getAllTransactionByUserId(@PathVariable String username) {
     logger.info("Get all transactions request received for User: " + username);
     List<Transaction> transactions = transactionService.getAllTransactionsByUsername(username);

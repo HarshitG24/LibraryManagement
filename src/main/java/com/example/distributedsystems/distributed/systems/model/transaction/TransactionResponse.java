@@ -3,10 +3,19 @@ package com.example.distributedsystems.distributed.systems.model.transaction;
 import java.util.List;
 
 
-public class TransactionRequest {
+public class TransactionResponse {
   private Long transactionId;
   private String username;
   private List<Long> bookIsbns;
+  private Long transactionDate;
+
+
+  public TransactionResponse(Long transactionId, Long transactionDate, List<Long> bookIsbns, String username) {
+    this.transactionId = transactionId;
+    this.bookIsbns = bookIsbns;
+    this.username = username;
+    this.transactionDate = transactionDate;
+  }
 
   public Long getTransactionId() {
     return transactionId;
@@ -32,12 +41,21 @@ public class TransactionRequest {
     this.bookIsbns = bookIsbns;
   }
 
+  public Long getTransactionDate() {
+    return transactionDate;
+  }
+
+  public void setTransactionDate(Long transactionDate) {
+    this.transactionDate = transactionDate;
+  }
+
   @Override
   public String toString() {
-    return "TransactionRequest{" +
+    return "TransactionResponse{" +
             "transactionId=" + transactionId +
             ", username='" + username + '\'' +
             ", bookIsbns=" + bookIsbns +
+            ", transactionDate=" + transactionDate +
             '}';
   }
 }
