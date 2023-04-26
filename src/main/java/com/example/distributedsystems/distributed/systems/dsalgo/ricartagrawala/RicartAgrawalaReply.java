@@ -1,26 +1,24 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RicartAgrawalaRelease {
-  private String operation;
+public class RicartAgrawalaReply {
+  private boolean granted;
   private ConcurrentHashMap<String, AtomicInteger> vectorTimestamp;
 
-  public RicartAgrawalaRelease() {
-  }
-
-  public RicartAgrawalaRelease(String operation, ConcurrentHashMap<String, AtomicInteger> vectorTimestamp) {
-    this.operation = operation;
+  public RicartAgrawalaReply(boolean granted, ConcurrentHashMap<String, AtomicInteger> vectorTimestamp) {
+    this.granted = granted;
     this.vectorTimestamp = vectorTimestamp;
   }
 
-  public String getOperation() {
-    return operation;
+  public boolean isGranted() {
+    return granted;
   }
 
-  public void setOperation(String operation) {
-    this.operation = operation;
+  public void setGranted(boolean granted) {
+    this.granted = granted;
   }
 
   public ConcurrentHashMap<String, AtomicInteger> getVectorTimestamp() {

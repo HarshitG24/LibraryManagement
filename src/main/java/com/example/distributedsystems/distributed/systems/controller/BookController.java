@@ -1,6 +1,8 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
+import com.example.distributedsystems.distributed.systems.dsalgo.vectortimestamps.VectorTimestampService;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosController;
+import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaHandler;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.service.BookService;
 
@@ -29,6 +31,13 @@ public class BookController extends PaxosController {
 
   @Autowired
   private BookService bookService;
+
+  @Autowired
+  public BookController(RicartAgrawalaHandler ricartAgrawalaHandler, VectorTimestampService vectorTimestampService) {
+    super(ricartAgrawalaHandler, vectorTimestampService);
+    System.out.println("Book controller");
+    System.out.println("VCT:" + vectorTimestampService);
+  }
 
   @GetMapping("")
   public ResponseEntity<List<Book>> getAllBooks() {

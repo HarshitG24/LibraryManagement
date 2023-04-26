@@ -47,7 +47,7 @@ public class PXController {
     public ResponseEntity<Object> prepare(@RequestBody PaxosTransaction transaction) {
 
         if (Math.random() <= 0.1) {
-            logger.error("Node failed for prepare at port: " + serverPort);
+            logger.error("(Intention Fail!) Node failed for PREPARE at port: " + serverPort);
             return new ResponseEntity<>(new Promise(false, Long.MIN_VALUE), HttpStatus.OK);
         }
 
@@ -69,7 +69,7 @@ public class PXController {
     @PostMapping("/accept")
     public ResponseEntity<Object> accept(@RequestBody PaxosTransaction transaction) {
         if (Math.random() <= 0.1) {
-            logger.error("Node failed for accept at port: " +serverPort);
+            logger.error("(Intention Fail!) Node failed for ACCEPT at port: " +serverPort);
             return new ResponseEntity<>(Long.MIN_VALUE, HttpStatus.OK);
         }
         if (transaction.getProposalId() >= maxIdSeen) {

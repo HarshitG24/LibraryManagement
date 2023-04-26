@@ -1,6 +1,8 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.paxos;
 
 import com.example.distributedsystems.distributed.systems.coordinator.RestService;
+import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaReply;
+import com.example.distributedsystems.distributed.systems.dsalgo.vectortimestamps.VectorTimestampService;
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaHandler;
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaRelease;
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaRequest;
@@ -14,12 +16,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class PaxosController {
 
@@ -35,21 +42,31 @@ public class PaxosController {
   @Autowired
   RestService restService;
 
-  @Autowired
-  NodeRegistry nodeRegistry;
+//  @Autowired
+//  NodeManager nodeManager;
 
   @Autowired
-  private RicartAgrawalaHandler ricartAgrawalaHandler;
+  NodeRegistry nodeRegistry;
 
   AtomicInteger promiseAccepted = new AtomicInteger(0);
   AtomicInteger nodesAccepted = new AtomicInteger(0);
 
+  private final RicartAgrawalaHandler ricartAgrawalaHandler;
+  private final VectorTimestampService vectorTimestampService;
+
+
+
+  @Autowired
+  public PaxosController(RicartAgrawalaHandler ricartAgrawalaHandler, VectorTimestampService vectorTimestampService) {
+    this.ricartAgrawalaHandler = ricartAgrawalaHandler;
+    this.vectorTimestampService = vectorTimestampService;
+  }
+
   private void preparePhase(PaxosTransaction paxosTransaction) {
     logger.info("Initiating PAXOS Prepare");
+    promiseAccepted.set(0); // Reset promiseAccepted to 0
     Set<String> allNodes = nodeRegistry.getActiveNodes();
-    String pid = System.currentTimeMillis() + serverPort + "";
-    System.out.println("pid is: " + pid);
-    paxosTransaction.setProposalId(System.currentTimeMillis() + serverPort);
+//    String pid = System.currentTimeMillis() + serverPort + "";
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     for (String url : allNodes) {
@@ -80,12 +97,12 @@ public class PaxosController {
 
   private void acceptPhase(PaxosTransaction paxosTransaction) {
     logger.info("Initiating PAXOS Accept");
+    nodesAccepted.set(0); // Reset nodesAccepted to 0
     Set<String> allNodes = nodeRegistry.getActiveNodes();
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
     for (String url : allNodes) {
       executor.execute(() -> {
         long acceptedTID = (long)restService.post(url + "/paxos/accept", paxosTransaction).getBody();
-        System.out.println("accepted id is: " + acceptedTID);
         if(acceptedTID != Long.MIN_VALUE){
           nodesAccepted.incrementAndGet();
         }
@@ -131,45 +148,69 @@ public class PaxosController {
 
   private void requestLocksFromAllInstances(PaxosScenario operation) {
     logger.info("Initiating Ricart Agrawala request lock");
+    try {
+      Set<String> nodeAddresses = nodeRegistry.getActiveNodes();
+      InetAddress address = InetAddress.getLocalHost();
+      String currentNodeAddress = "http://" + address.getHostAddress() + ":" + serverPort;
+      nodeAddresses.remove(currentNodeAddress); // Remove the current node's address from the list
 
-    Set<String> nodeAddresses = nodeRegistry.getActiveNodes();
+      while (true) {
+        vectorTimestampService.incrementVectorTimestamp(operation.toString(), currentNodeAddress);
+        ConcurrentHashMap<String, AtomicInteger> vectorTimestamp = vectorTimestampService.getCurrentVectorTimestamp(operation.toString());
+        logger.info("Current vector timestamp for " + operation + ": " + vectorTimestamp);
+        int requestCountForOperation = ricartAgrawalaHandler.getAndIncrementRequestCount(operation.toString());
+        RicartAgrawalaRequest request = new RicartAgrawalaRequest(vectorTimestamp, requestCountForOperation, operation.toString());
 
-    while (true) {
-      long timestamp = System.currentTimeMillis();
-      int requestCountForOperation = ricartAgrawalaHandler.getAndIncrementRequestCount(operation.toString());
-      RicartAgrawalaRequest request = new RicartAgrawalaRequest(timestamp, requestCountForOperation, operation.toString());
+        List<RicartAgrawalaReply> replies = nodeAddresses.stream()
+                .map(nodeAddress -> nodeAddress + "/ricartAgrawala/request/" + operation.toString())
+                .map(url -> restService.post(url, request, RicartAgrawalaReply.class))
+                .collect(Collectors.toList());
 
-      boolean allLocksAcquired = nodeAddresses.stream()
-              .map(nodeAddress -> nodeAddress + "/ricartAgrawala/request/" + operation.toString())
-              .map(url -> restService.post(url, request))
-              .allMatch(response -> Boolean.TRUE.equals(response.getBody()));
+        boolean allLocksAcquired = replies.stream().allMatch(RicartAgrawalaReply::isGranted);
 
-      if (allLocksAcquired) {
-        logger.info("All locks acquired");
-        break;
+
+        if (allLocksAcquired) {
+          logger.info("All locks acquired");
+          // Update the vector timestamp of the current node
+          replies.forEach(reply -> vectorTimestampService.updateVectorTimestamps(operation.toString(), reply.getVectorTimestamp()));
+          break;
+        }
+
+        try {
+          Thread.sleep(AWAIT_TERMINATION_SECONDS);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
       }
-
-      try {
-        Thread.sleep(AWAIT_TERMINATION_SECONDS);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+    } catch (UnknownHostException e) {
+      logger.error("Exception: " + e);
     }
   }
 
   private void releaseLocksFromAllInstances(PaxosScenario operation) {
     logger.info("Initiating Ricart Agrawala Release lock phase");
+    try {
+      Set<String> nodeAddresses = nodeRegistry.getActiveNodes();
+      InetAddress address = InetAddress.getLocalHost();
+      String currentNodeAddress = "http://" + address.getHostAddress() + ":" + serverPort;
+      nodeAddresses.remove(currentNodeAddress); // Remove the current node's address from the list
+      vectorTimestampService.incrementVectorTimestamp(operation.toString(), currentNodeAddress);
+      ConcurrentHashMap<String, AtomicInteger> vectorTimestamp = vectorTimestampService.getCurrentVectorTimestamp(operation.toString());
+      logger.info("Current vector timestamp for " + operation + ": " + vectorTimestamp);
+      RicartAgrawalaRelease release = new RicartAgrawalaRelease(operation.toString(), vectorTimestamp);
 
-    Set<String> nodeAddresses = nodeRegistry.getActiveNodes();
-    RicartAgrawalaRelease release = new RicartAgrawalaRelease(operation.toString());
-
-    nodeAddresses.stream()
-            .map(nodeAddress -> nodeAddress + "/ricartAgrawala/release/" + operation.toString())
-            .forEach(url -> restService.post(url, release));
+      nodeAddresses.stream()
+              .map(nodeAddress -> nodeAddress + "/ricartAgrawala/release/" + operation.toString())
+              .map(url -> restService.post(url, release, RicartAgrawalaReply.class))
+              .forEach(reply -> vectorTimestampService.updateVectorTimestamps(operation.toString(), reply.getVectorTimestamp()));
+    } catch (UnknownHostException e) {
+      logger.error("Exception: " + e);
+    }
   }
 
   public ResponseEntity<Boolean> propose(@RequestBody PaxosTransaction paxosTransaction) {
     try {
+      paxosTransaction.setProposalId(System.currentTimeMillis() + serverPort);
       logger.info("Proposing transaction with proposal id: " + paxosTransaction.getProposalId());
 
       // Ricart-Agrawala Algorithm - Request phase

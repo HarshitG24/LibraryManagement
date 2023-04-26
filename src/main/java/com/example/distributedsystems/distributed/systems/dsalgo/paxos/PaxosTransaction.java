@@ -1,9 +1,12 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.paxos;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.List;
 
 public class PaxosTransaction {
 
+    @Id
     private Long transactionId;
     private String userId;
 

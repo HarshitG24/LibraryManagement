@@ -1,8 +1,10 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
+import com.example.distributedsystems.distributed.systems.dsalgo.vectortimestamps.VectorTimestampService;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosController;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScenario;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
+import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaHandler;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import com.example.distributedsystems.distributed.systems.model.transaction.TransactionRequest;
 import com.example.distributedsystems.distributed.systems.service.TransactionService;
@@ -32,6 +34,11 @@ public class TransactionController extends PaxosController {
 
   @Autowired
   private TransactionService transactionService;
+
+  @Autowired
+  public TransactionController(RicartAgrawalaHandler ricartAgrawalaHandler, VectorTimestampService vectorTimestampService) {
+    super(ricartAgrawalaHandler, vectorTimestampService);
+  }
 
   @GetMapping("")
   public ResponseEntity<List<Transaction>> getAllTransactions() {

@@ -1,8 +1,10 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
+import com.example.distributedsystems.distributed.systems.dsalgo.vectortimestamps.VectorTimestampService;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosController;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScenario;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
+import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaHandler;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.model.cart.Cart;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBook;
@@ -34,6 +36,12 @@ public class CartController extends PaxosController {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    public CartController(RicartAgrawalaHandler ricartAgrawalaHandler, VectorTimestampService vectorTimestampService) {
+        super(ricartAgrawalaHandler, vectorTimestampService);
+    }
+
 
     @GetMapping("/all")
     public ResponseEntity<List<CartDTO>> getAllCarts() {

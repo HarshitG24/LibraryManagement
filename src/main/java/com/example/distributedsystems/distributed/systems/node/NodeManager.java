@@ -1,5 +1,6 @@
 package com.example.distributedsystems.distributed.systems.node;
 
+import com.example.distributedsystems.distributed.systems.dsalgo.vectortimestamps.VectorTimestampService;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.model.cart.Cart;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBook;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import jakarta.annotation.PreDestroy;
+
 
 @Service
 public class NodeManager {
@@ -54,9 +57,8 @@ public class NodeManager {
 
     private UUID lifecycleListenerId;
 
-    public NodeManager( ) {
-
-    }
+    @Autowired
+    private VectorTimestampService vectorTimestampService;
 
     @Autowired
     public void setBookRepository(BookInterface bookRepository) {
@@ -95,19 +97,19 @@ public class NodeManager {
         if (existingNodeAddress != null) {
             synchronizeDataFromNode(existingNodeAddress);
         }
+        // Initialize the vector timestamp for the current new node
+        updateVectorTimestampsForAllNodesExceptCurrent();
     }
 
-    public void stopNode() {
-        // Unregister the node
-        logger.info("Unregistering node");
-        String nodeAddress = getNodeAddress();
-        logger.info("Stopping node");
-        if (lifecycleListenerId != null) {
-            hazelcastInstance.getLifecycleService().removeLifecycleListener(lifecycleListenerId);
+    private void updateVectorTimestampsForAllNodesExceptCurrent() {
+        String currentNodeAddress = getNodeAddress();
+        vectorTimestampService.updateVectorTimestampsForCurrentActiveNodes();
+        for (String nodeAddress : nodeRegistry.getActiveNodes()) {
+            if (!nodeAddress.equals(currentNodeAddress)) {
+                restTemplate.postForEntity(nodeAddress + "/vectorTimestamps/update", null, String.class);
+            }
         }
-        logger.info("Current Active Nodes: " + nodeRegistry.getActiveNodes());
     }
-
 
     public void synchronizeDataFromNode(String nodeAddress) {
 
