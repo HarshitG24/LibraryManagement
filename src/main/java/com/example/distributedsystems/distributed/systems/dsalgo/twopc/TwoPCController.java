@@ -2,7 +2,6 @@ package com.example.distributedsystems.distributed.systems.dsalgo.twopc;
 
 import com.example.distributedsystems.distributed.systems.controller.ServerController;
 import com.example.distributedsystems.distributed.systems.coordinator.RestService;
-import com.example.distributedsystems.distributed.systems.model.Response;
 import com.example.distributedsystems.distributed.systems.model.user.User;
 import com.example.distributedsystems.distributed.systems.node.NodeRegistry;
 
@@ -17,6 +16,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Controller
 public class TwoPCController {
@@ -30,7 +30,7 @@ public class TwoPCController {
 
     int ackCount  = 0;
 
-    public  ResponseEntity<Response> performTransaction(User emp) {
+    public  ResponseEntity<TwoPCPromise> performTransaction(User emp) {
         System.out.println("entered user is: " + emp);
         try{
 
@@ -55,34 +55,55 @@ public class TwoPCController {
                 executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
             } catch (InterruptedException e) {
                 logger.error("TwoPC Failed to reach consensus for the proposal");
-                return new ResponseEntity<>(new Response(false, "TwoPC Failed to reach consensus for the proposal"), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new TwoPCPromise(false, "TwoPC Failed to reach consensus for the proposal"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             if(ackCount != ports.size()){
                 logger.error("TwoPC Failed to reach consensus for the proposal");
-                return new ResponseEntity<>(new Response(false, "TwoPC Failed to reach consensus for the proposal"), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new TwoPCPromise(false, "TwoPC Failed to reach consensus for the proposal"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             logger.info("TwoPC consensus reached");
 
+            ackCount = 0;
+
+            AtomicReference<String> failed_msg = new AtomicReference<>();
+//            TwoPCPromise promise;
             // commit phase as consesnus acheived
             executor = Executors.newFixedThreadPool(10);
             for(String a:ports){
                 executor.execute(() -> {
-                    boolean acks = (boolean) restService.post(a+"/server/docommit", emp).getBody();
+                    LinkedHashMap<String, Object> promise =  (LinkedHashMap<String, Object>) restService.post(a+"/server/docommit", emp).getBody();
+                    if((Boolean) promise.get("didPromise")){
+                        ackCount++;
+                    }
+                    else {
+                        System.out.println("failure message is : " +promise.get("message"));
+                        failed_msg.set((String) promise.get("message"));
+                    }
+
                 });
             }
 
+
             executor.shutdown();// To execute the above tasks, which is to send the commit message to all the replica together and not one after other.
+
+
+
             logger.info("TwoPC commit successful");
             try {
                 executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
             } catch (InterruptedException e) {
                 logger.error("TwoPC commit failed, now rolling back...");
-                return new ResponseEntity<>(new Response(false, "TwoPC Failed to commit"), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new TwoPCPromise(false, "TwoPC Failed to commit"), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            if(ackCount != ports.size()){
+                logger.error(String.valueOf(failed_msg));
+                return new ResponseEntity<>(new TwoPCPromise(false,String.valueOf(failed_msg)), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             ackCount = 0;
         } catch (Exception e) {
-            return new ResponseEntity<>(new Response(false, "TwoPC Failed to commit"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new TwoPCPromise(false, "TwoPC Failed to commit"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(new Response(true, "TwoPC committed"), HttpStatus.OK);
+        return new ResponseEntity<>(new TwoPCPromise(true, "TwoPC committed"), HttpStatus.OK);
     }
 }

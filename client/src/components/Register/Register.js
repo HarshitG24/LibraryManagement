@@ -32,7 +32,7 @@ const Register = () => {
                 phone,
             }
             dispatch(userRegisterThunk(newUser)).then(response => {
-                if (response.payload.success) {
+                if (response.payload.didPromise) {
                     toast.success('Registered successfully! :)', {
                         position: "top-right",
                         autoClose: 5000,
@@ -45,7 +45,7 @@ const Register = () => {
                     });
                     navigate('/login')
                 } else {
-                    toast.error('Could not register user! Make sure username and email are unique.', {
+                    toast.error(response.payload.message, {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,

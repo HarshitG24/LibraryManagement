@@ -1,5 +1,7 @@
 package com.example.distributedsystems.distributed.systems.service;
 
+import com.example.distributedsystems.distributed.systems.dsalgo.twopc.TwoPCPromise;
+import com.example.distributedsystems.distributed.systems.model.Response;
 import com.example.distributedsystems.distributed.systems.model.user.User;
 import com.example.distributedsystems.distributed.systems.repository.UserInterface;
 
@@ -22,14 +24,22 @@ public class UserService {
     }
 
     @Transactional
-    public void createUser(User user) {
+    public TwoPCPromise createUser(User user) {
+        TwoPCPromise promise;
         if (userInterface.findByEmail(user.getEmail()) != null) {
-            throw new IllegalArgumentException("Email already exists");
+
+            promise = new TwoPCPromise(false,"Email already exist");
+            return promise;
+
         }
         if (userInterface.findByUsername(user.getUsername()) != null) {
-            throw new IllegalArgumentException("Username already exists");
+            promise = new TwoPCPromise(false,"Username already exist");
+            return promise;
+
         }
         userInterface.save(user);
+        promise = new TwoPCPromise(true,"User added successfully");
+        return promise;
     }
 
     public User getUserByUsernameAndPassword(String username, String password) {

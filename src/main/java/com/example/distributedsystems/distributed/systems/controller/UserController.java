@@ -2,6 +2,7 @@ package com.example.distributedsystems.distributed.systems.controller;
 
 
 import com.example.distributedsystems.distributed.systems.dsalgo.twopc.TwoPCController;
+import com.example.distributedsystems.distributed.systems.dsalgo.twopc.TwoPCPromise;
 import com.example.distributedsystems.distributed.systems.model.Response;
 import com.example.distributedsystems.distributed.systems.model.user.CreateUserRequest;
 import com.example.distributedsystems.distributed.systems.model.user.User;
@@ -53,11 +54,11 @@ public class UserController extends TwoPCController {
     }
 
     @PostMapping("/createUser")
-    public ResponseEntity<Response> createUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<TwoPCPromise> createUser(@RequestBody CreateUserRequest request) {
         logger.info("Create user request received. UserRequest: " + request);
         User.Address address = new User.Address(request.getAddress1(), request.getAddress2(), request.getCity(), request.getState(), request.getZipcode());
         User user = new User(request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword(), request.getUsername(), request.getPhone(), address);
-        ResponseEntity<Response> createUserResponse;
+        ResponseEntity<TwoPCPromise> createUserResponse;
         try{
             createUserResponse = performTransaction(user);
         } catch (Exception e) {
