@@ -6,6 +6,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.vectortimestamp
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaHandler;
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaRelease;
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaRequest;
+import com.example.distributedsystems.distributed.systems.model.Response;
 import com.example.distributedsystems.distributed.systems.node.NodeRegistry;
 
 import org.slf4j.Logger;
@@ -62,7 +63,7 @@ public class PaxosController {
     this.vectorTimestampService = vectorTimestampService;
   }
 
-  private void preparePhase(PaxosTransaction paxosTransaction) {
+    private ResponseEntity<Response> preparePhase(PaxosTransaction paxosTransaction) {
     logger.info("Initiating PAXOS Prepare");
     promiseAccepted.set(0); // Reset promiseAccepted to 0
     Set<String> allNodes = nodeRegistry.getActiveNodes();
@@ -86,16 +87,18 @@ public class PaxosController {
       throw new RuntimeException(e);
     }
     logger.info("Number of promises received: " + promiseAccepted.get() + ", Total number of nodes:: " + allNodes.size());
+
     // Failed to reach consensus
     if(promiseAccepted.get() <= allNodes.size()/2){
       logger.error("Failed to reach consensus for the proposal: " + paxosTransaction.getProposalId() + " in prepare phase");
+      return new ResponseEntity<>(new Response(false, "Failed to reach consensus for the proposal in prepare phase"), HttpStatus.BAD_REQUEST);
     } else {
       //Call accept phase
-      acceptPhase(paxosTransaction);
+      return acceptPhase(paxosTransaction);
     }
   }
 
-  private void acceptPhase(PaxosTransaction paxosTransaction) {
+  private ResponseEntity<Response> acceptPhase(PaxosTransaction paxosTransaction) {
     logger.info("Initiating PAXOS Accept");
     nodesAccepted.set(0); // Reset nodesAccepted to 0
     Set<String> allNodes = nodeRegistry.getActiveNodes();
@@ -118,13 +121,14 @@ public class PaxosController {
     // Failed to reach consensus
     if(nodesAccepted.get() <= allNodes.size()/2){
       logger.error("Failed to reach consensus to accept transaction: " + paxosTransaction.getTransactionId());
+      return new ResponseEntity<>(new Response(false, "Failed to reach consensus to accept transaction in accept phase"), HttpStatus.BAD_REQUEST);
     } else {
       // Call learn phase
-      learnPhase(paxosTransaction);
+      return learnPhase(paxosTransaction);
     }
   }
 
-  private void learnPhase(PaxosTransaction paxosTransaction) {
+  private ResponseEntity<Response> learnPhase(PaxosTransaction paxosTransaction) {
     logger.info("Initiating PAXOS Learn");
     Set<String> allNodes = nodeRegistry.getActiveNodes();
 
@@ -144,6 +148,8 @@ public class PaxosController {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
+
+    return new ResponseEntity<>(new Response(true, "Success"), HttpStatus.OK);
   }
 
   private void requestLocksFromAllInstances(PaxosScenario operation) {
@@ -208,7 +214,8 @@ public class PaxosController {
     }
   }
 
-  public ResponseEntity<Boolean> propose(@RequestBody PaxosTransaction paxosTransaction) {
+  public ResponseEntity<Response> propose(@RequestBody PaxosTransaction paxosTransaction) {
+    ResponseEntity<Response> ans;
     try {
       paxosTransaction.setProposalId(System.currentTimeMillis() + serverPort);
       logger.info("Proposing transaction with proposal id: " + paxosTransaction.getProposalId());
@@ -217,7 +224,8 @@ public class PaxosController {
       requestLocksFromAllInstances(paxosTransaction.getScenario());
 
       // Paxos Algorithm
-      preparePhase(paxosTransaction);
+      ans = preparePhase(paxosTransaction);
+      System.out.println("the ans i got is: " + ans + ", " + ans.getBody());
 
       // Ricart-Agrawala Algorithm - Release phase
       releaseLocksFromAllInstances(paxosTransaction.getScenario());
@@ -226,6 +234,6 @@ public class PaxosController {
       throw new RuntimeException(e);
     }
 
-    return new ResponseEntity<>(true, HttpStatus.OK);
+    return ans;
   }
 }
