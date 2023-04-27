@@ -1,0 +1,130 @@
+[
+  {
+    "isbn": "9780553381689",
+    "name": "A Game of Thrones",
+    "authorName": "George R.R. Martin",
+    "description": "A Game of Thrones is the first book in the epic fantasy series 'A Song of Ice and Fire.' Set in the fictional world of Westeros, the story unfolds through the perspectives of multiple characters, detailing the intricacies of politics, war, and personal conflicts. At the heart of the narrative are the Stark family, who become embroiled in a deadly game of power and survival. With its rich world-building, complex character development, and gripping storytelling, 'A Game of Thrones' has captivated readers and spawned a successful television adaptation.",
+    "image": "https://m.media-amazon.com/images/P/0553381687.01._SCLZZZZZZZ_SX500_.jpg",
+    "inventory": 12
+  },
+  {
+    "isbn": 9780132350884,
+    "name": "Clean Code: A Handbook of Agile Software Craftsmanship",
+    "description": "Even bad code can function. But if code isn’t clean, it can bring a development organization to its knees. Every year, countless hours and significant resources are lost because of poorly written code. But it doesn’t have to be that way.\n\nNoted software expert Robert C. Martin, presents a revolutionary paradigm with Clean Code: A Handbook of Agile Software Craftsmanship. Martin, who has helped bring agile principles from a practitioner’s point of view to tens of thousands of programmers, has teamed up with his colleagues from Object Mentor to distill their best agile practice of cleaning code “on the fly” into a book that will instill within you the values of software craftsman, and make you a better programmer―but only if you work at it.\n\nWhat kind of work will you be doing? You’ll be reading code―lots of code. And you will be challenged to think about what’s right about that code, and what’s wrong with it. More importantly you will be challenged to reassess your professional values and your commitment to your craft.  \n\nClean Codeis divided into three parts. The first describes the principles, patterns, and practices of writing clean code. The second part consists of several case studies of increasing complexity. Each case study is an exercise in cleaning up code―of transforming a code base that has some problems into one that is sound and efficient. The third part is the payoff: a single chapter containing a list of heuristics and “smells” gathered while creating the case studies. The result is a knowledge base that describes the way we think when we write, read, and clean code.\n \nReaders will come away from this book understanding\nHow to tell the difference between good and bad code\nHow to write good code and how to transform bad code into good code\nHow to create good names, good functions, good objects, and good classes\nHow to format code for maximum readability\nHow to implement complete error handling without obscuring code logic\nHow to unit test and practice test-driven development\nWhat “smells” and heuristics can help you identify bad code\nThis book is a must for any developer, software engineer, project manager, team lead, or systems analyst with an interest in producing better code.",
+    "image": "https://m.media-amazon.com/images/I/41xShlnTZTL._SX218_BO1,204,203,200_QL40_FMwebp_.jpg",
+    "inventory": 0,
+    "authorName": "Robert C. Martin"
+  },
+  {
+    "isbn": 9780321125217,
+    "name": "The Pragmatic Programmer",
+    "description": "The Pragmatic Programmer is one of those rare tech books you’ll read, re-read, and read again over the years. Whether you’re new to the field or an experienced practitioner, you’ll come away with fresh insights each and every time.\n\nDave Thomas and Andy Hunt wrote the first edition of this influential book in 1999 to help their clients create better software and rediscover the joy of coding. These lessons have helped a generation of programmers examine the very essence of software development, independent of any particular language, framework, or methodology, and the Pragmatic philosophy has spawned hundreds of books, screencasts, and audio books, as well as thousands of careers and success stories.\n\nNow, twenty years later, this new edition re-examines what it means to be a modern programmer. Topics range from personal responsibility and career development to architectural techniques for keeping your code flexible and easy to adapt and reuse. Read this book, and you’ll learn how to:\nFight software rot\nLearn continuously\nAvoid the trap of duplicating knowledge\nWrite flexible, dynamic, and adaptable code\nHarness the power of basic tools\nAvoid programming by coincidence\nLearn real requirements\nSolve the underlying problems of concurrent code\nGuard against security vulnerabilities\nBuild teams of Pragmatic Programmers\nTake responsibility for your work and career\nTest ruthlessly and effectively, including property-based testing\nImplement the Pragmatic Starter Kit\nDelight your users\nWritten as a series of self-contained sections and filled with classic and fresh anecdotes, thoughtful examples, and interesting analogies, The Pragmatic Programmer illustrates the best approaches and major pitfalls of many different aspects of software development. Whether you’re a new coder, an experienced programmer, or a manager responsible for software projects, use these lessons daily, and you’ll quickly see improvements in personal productivity, accuracy, and job satisfaction. You’ll learn skills and develop habits and attitudes that form the foundation for long-term success in your career.",
+    "image": "https://images-na.ssl-images-amazon.com/images/I/41uPjEenkFL._SX385_BO1,204,203,200_.jpg",
+    "inventory": 45,
+    "authorName": "Andrew Hunt, David Thomas"
+  },
+  {
+    "isbn": 9781491978917,
+    "name": "Python for Data Analysis: Data Wrangling with Pandas, NumPy, and IPython",
+    "description": "Get complete instructions for manipulating, processing, cleaning, and crunching datasets in Python. Updated for Python 3.6, the second edition of this hands-on guide is packed with practical case studies that show you how to solve a broad set of data analysis problems effectively. You’ll learn the latest versions of pandas, NumPy, IPython, and Jupiter in the process.\n\nWritten by Wes McKinney, the creator of the Python pandas project, this book is a practical, modern introduction to data science tools in Python. It’s ideal for analysts new to Python and for Python programmers new to data science and scientific computing. Data files and related material are available on GitHub.\n\nUse the IPython shell and Jupiter notebook for exploratory computing\nLearn basic and advanced features in NumPy (Numerical Python)\nGet started with data analysis tools in the pandas library\nUse flexible tools to load, clean, transform, merge, and reshape data\nCreate informative visualizations with matplotlib\nApply the pandas group by facility to slice, dice, and summarize datasets\nAnalyze and manipulate regular and irregular time series data\nLearn how to solve real-world data analysis problems with thorough, detailed examples.",
+    "image": "https://m.media-amazon.com/images/I/51HuYEwAl2L._SX379_BO1,204,203,200_.jpg",
+    "inventory": 11,
+    "authorName": "Wes McKinney"
+  },
+  {
+    "isbn": 9781593275846,
+    "name": "Eloquent JavaScript: A Modern Introduction to Programming",
+    "description": "TJavaScript lies at the heart of almost every modern web application, from social apps like Twitter to browser-based game frameworks like Phaser and Babylon. Though simple for beginners to pick up and play with, JavaScript is a flexible, complex language that you can use to build full-scale applications.\n\nThis much anticipated and thoroughly revised third edition of Eloquent JavaScript dives deep into the JavaScript language to show you how to write beautiful, effective code. It has been updated to reflect the current state of Java¬Script and web browsers and includes brand-new material on features like class notation, arrow functions, iterators, async functions, template strings, and block scope. A host of new exercises have also been added to test your skills and keep you on track.\n\nAs with previous editions, Haverbeke continues to teach through extensive examples and immerses you in code from the start, while exercises and full-chapter projects give you hands-on experience with writing your own programs. You start by learning the basic structure of the JavaScript language as well as control structures, functions, and data structures to help you write basic programs. Then you'll learn about error handling and bug fixing, modularity, and asynchronous programming before moving on to web browsers and how JavaScript is used to program them. As you build projects such as an artificial life simulation, a simple programming language, and a paint program, you'll learn how to:\n\n- Understand the essential elements of programming, including syntax, control, and data\n- Organize and clarify your code with object-oriented and functional programming techniques\n- Script the browser and make basic web applications\n- Use the DOM effectively to interact with browsers\n- Harness Node.js to build servers and utilities\n\nIsn't it time you became fluent in the language of the Web?\n\n* All source code is available online in an inter¬active sandbox, where you can edit the code, run it, and see its output instantly.",
+    "image": "https://m.media-amazon.com/images/I/91asIC1fRwL.jpg",
+    "inventory": 1,
+    "authorName": "Marijn Haverbeke"
+  },
+  {
+    "isbn": 9780345806977,
+    "name": "The Goldfinch",
+    "authorName": "Donna Tartt",
+    "description": "The Goldfinch is a mesmerizing, stay-up-all-night and tell-all-your-friends triumph, an old-fashioned story of loss and obsession, survival and self-invention. From the streets of New York to the dark corners of the art underworld, this novel explores the devastating impact of grief and the ruthless machinations of fate.",
+    "image": "https://m.media-amazon.com/images/P/0316055433.01._SCLZZZZZZZ_SX500_.jpg",
+    "inventory": 23
+  },
+  {
+    "isbn": 9781984801810,
+    "name": "Where the Crawdads Sing",
+    "authorName": "Delia Owens",
+    "description": "For years, rumors of the 'Marsh Girl' have haunted Barkley Cove, a quiet town on the North Carolina coast. So in late 1969, when handsome Chase Andrews is found dead, the locals immediately suspect Kya Clark, the so-called Marsh Girl. But Kya is not what they say. Sensitive and intelligent, she has survived for years alone in the marsh that she calls home, finding friends in the gulls and lessons in the sand. Then the time comes when she yearns to be touched and loved. When two young men from town become intrigued by her wild beauty, Kya opens herself to a new life - until the unthinkable happens.",
+    "image": "https://m.media-amazon.com/images/P/0593540484.01._SCLZZZZZZZ_SX500_.jpg",
+    "inventory": 14
+  },
+  {
+    "isbn": "9780743273565",
+    "name": "The Great Gatsby",
+    "authorName": "F. Scott Fitzgerald",
+    "description": "Set in the Jazz Age of the 1920s, 'The Great Gatsby' tells the story of the mysterious millionaire Jay Gatsby and his obsession with the beautiful and wealthy Daisy Buchanan. This classic novel explores themes of love, wealth, and the corruption of the American Dream. With its vivid characters and elegant prose, 'The Great Gatsby' is widely regarded as one of the greatest works of American literature.",
+    "image": "https://m.media-amazon.com/images/P/1982149485.01._SCLZZZZZZZ_SX500_.jpg",
+    "inventory": 20
+  },
+  {
+    "isbn": "9780060935467",
+    "name": "To Kill a Mockingbird",
+    "authorName": "Harper Lee",
+    "description": "Set in the Deep South during the 1930s, 'To Kill a Mockingbird' is a coming-of-age story that explores the themes of racial injustice, prejudice, and loss of innocence. The novel follows the story of young Scout Finch and her brother Jem, whose father, a respected lawyer, defends a black man falsely accused of a crime. With its powerful message and unforgettable characters, 'To Kill a Mockingbird' is a timeless classic that continues to resonate with readers today.",
+    "image": "https://m.media-amazon.com/images/P/0435233114.01._SCLZZZZZZZ_SX500_.jpg",
+    "inventory": 15
+  },
+  {
+    "isbn": "9780316769488",
+    "name": "The Catcher in the Rye",
+    "authorName": "J.D. Salinger",
+    "description": "'The Catcher in the Rye' is a novel that tells the story of Holden Caulfield, a teenage boy who has been expelled from his boarding school. The novel explores themes of alienation, identity, and the transition from adolescence to adulthood. With its frank depiction of teenage angst and rebellion, 'The Catcher in the Rye' has become a classic of American literature and a favorite among young readers.",
+    "image": "https://m.media-amazon.com/images/P/0316769177.01._SCLZZZZZZZ_SX500_.jpg",
+    "inventory": 10
+  },
+  {
+    "isbn": 9780141439518,
+    "name": "Pride and Prejudice",
+    "authorName": "Jane Austen",
+    "description": "Pride and Prejudice is a novel by Jane Austen that follows the story of the Bennet family, particularly the relationship between Elizabeth Bennet and Mr. Darcy. Set in 19th century England, the novel explores themes of marriage, social status, and the role of women in society.",
+    "image": "https://m.media-amazon.com/images/P/1727118871.01._SCLZZZZZZZ_SX500_.jpg",
+    "inventory": 5
+  },
+  {
+    "isbn": 9780547928227,
+    "name": "The Hobbit",
+    "authorName": "J.R.R. Tolkien",
+    "description": "The Hobbit is a fantasy novel by J.R.R. Tolkien that follows the story of Bilbo Baggins, a hobbit who is enlisted to join a quest to reclaim a treasure from a dragon. Set in Middle-earth, the novel is a precursor to the events of The Lord of the Rings trilogy and is known for its imaginative world-building and memorable characters.",
+    "image": "https://m.media-amazon.com/images/I/51phEoA5C9L._SX218_BO1,204,203,200_QL40_FMwebp_.jpg",
+    "inventory": 32
+  },
+  {
+    "isbn": 9781455582341,
+    "name": "Thinking, Fast and Slow",
+    "authorName": "Daniel Kahneman",
+    "description": "In the international bestseller, Thinking, Fast and Slow, Daniel Kahneman, the renowned psychologist and winner of the Nobel Prize in Economics, takes us on a groundbreaking tour of the mind and explains the two systems that drive the way we think. System 1 is fast, intuitive, and emotional; System 2 is slower, more deliberative, and more logical. The impact of overconfidence on corporate strategies, the difficulties of predicting what will make us happy in the future, the profound effect of cognitive biases on everything from playing the stock market to planning our next vacation―each of these can be understood only by knowing how the two systems shape our judgments and decisions.",
+    "inventory": 22,
+    "image": "https://m.media-amazon.com/images/P/0374533555.01._SCLZZZZZZZ_SX500_.jpg"
+  },
+  {
+    "isbn": 9780062457714,
+    "name": "Sapiens: A Brief History of Humankind",
+    "authorName": "Yuval Noah Harari",
+    "description": "In Sapiens, Dr. Yuval Noah Harari spans the whole of human history, from the very first humans to walk the earth to the radical -- and sometimes devastating -- breakthroughs of the Cognitive, Agricultural, and Scientific Revolutions. Drawing on insights from biology, anthropology, paleontology, and economics, he explores how the currents of history have shaped our human societies, the animals and plants around us, and even our personalities. Have we become happier as history has unfolded? Can we ever free our behavior from the heritage of our ancestors? And what, if anything, can we do to influence the course of the centuries to come?",
+    "inventory": 15,
+    "image": "https://m.media-amazon.com/images/P/B08HM1J5YF.01._SCLZZZZZZZ_SX500_.jpg"
+  },
+  {
+    "isbn": 9780802127433,
+    "name": "Between the World and Me",
+    "authorName": "Ta-Nehisi Coates",
+    "description": "In a profound work that pivots from the biggest questions about American history and ideals to the most intimate concerns of a father for his son, Ta-Nehisi Coates offers a powerful new framework for understanding our nation’s history and current crisis. Americans have built an empire on the idea of “race,” a falsehood that damages us all but falls most heavily on the bodies of black women and men—bodies exploited through slavery and segregation, and, today, threatened, locked up, and murdered out of all proportion. What is it like to inhabit a black body and find a way to live within it? And how can we all honestly reckon with this fraught history and free ourselves from its burden?",
+    "inventory": 8,
+    "image": "https://m.media-amazon.com/images/P/0812993543.01._SCLZZZZZZZ_SX500_.jpg"
+  },
+  {
+    "isbn": 9780385494767,
+    "name": "The 7 Habits of Highly Effective People: Powerful Lessons in Personal Change",
+    "description": "The 7 Habits of Highly Effective People: Powerful Lessons in Personal Change was first published in 1989 by Stephen R. Covey. In the book, Covey presents a holistic, integrated, principle-centered approach for solving personal and professional problems. With penetrating insights and pointed anecdotes, Covey reveals a step-by-step pathway for living with fairness, integrity, service, and human dignity—principles that give us the security to adapt to change and the wisdom and power to take advantage of the opportunities that change creates.\n\nThe 7 Habits of Highly Effective People is divided into three parts. In the first, Covey explains his approach to self-improvement and defines the seven habits of highly effective people. In the second part, he explains how to apply the seven habits to personal and interpersonal situations. Finally, Covey explains how to adopt the seven habits to the larger issues of life and organizations.\n\nWith more than 25 million copies sold worldwide in over 40 languages, The 7 Habits of Highly Effective People remains one of the most influential books in the self-help genre. It has been used by individuals, families, schools, businesses, and governments to achieve personal and organizational goals.",
+    "image": "https://m.media-amazon.com/images/P/0743269519.01._SCLZZZZZZZ_SX500_.jpg",
+    "inventory": 13,
+    "authorName": "Stephen R. Covey"
+  }
+]

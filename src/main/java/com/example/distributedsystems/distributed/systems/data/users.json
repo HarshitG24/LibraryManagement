@@ -1,0 +1,30 @@
+[
+  {
+    "userId": 1,
+    "firstName": "Nishtha",
+    "lastName": "Goswami",
+    "email": "testuse2r@gmail.com",
+    "username": "nishthgos",
+    "password": "123456",
+    "phone": "6171234567",
+    "address1": "Boylston St",
+    "address2": "Apt 123",
+    "city": "Boston",
+    "state": "MA",
+    "zipcode": "02215"
+  },
+  {
+    "userId": 2,
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john@gmail.com",
+    "username": "johndoe",
+    "password": "123456",
+    "phone": "1234567899",
+    "address1": "18 Creighton Street, Unit 1",
+    "address2": null,
+    "city": "Boston",
+    "state": "Massachusetts",
+    "zipcode": "02130"
+  }
+]
