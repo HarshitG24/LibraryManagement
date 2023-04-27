@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"*"})
 @RequestMapping("/cart")
 public class CartController extends PaxosController {
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);

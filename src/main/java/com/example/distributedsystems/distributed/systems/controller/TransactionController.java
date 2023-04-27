@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"*"})
 @RequestMapping("/transaction")
 public class TransactionController extends PaxosController {
   private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);

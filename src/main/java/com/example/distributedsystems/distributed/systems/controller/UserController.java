@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"*"})
 @RequestMapping("/user")
 public class UserController extends TwoPCController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
