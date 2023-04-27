@@ -128,9 +128,6 @@ const Book = () => {
                          </div>
                      )}
 
-                     {/* ISBN */}
-                     <div className="card-text mb-3"><b>ISBN:</b> {book.isbn}</div>
-
                      {/* Description */}
                      <div className="mb-3">
                          <h5>Description</h5>

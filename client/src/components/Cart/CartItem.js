@@ -60,11 +60,7 @@ const CartItem = ({ book, user }) => {
                                 to={`/books/${book.isbn}`}
                                 style={{textDecoration: "none"}}
                             ><div className="wd-light-text fw-bold">{book.name}</div></Link>
-                            <div className="small mt-1 mb-2" style={{
-                                height: "auto",
-                                maxHeight: "68px",
-                                overflow: "hidden"
-                            }}>{book.description}</div>
+                            <div className="small mt-1 mb-2">{book.description}</div>
 
                             <div className="small">ISBN: {book.isbn}</div>
                             <div className="small mb-2">Author: {book.authorName}</div>

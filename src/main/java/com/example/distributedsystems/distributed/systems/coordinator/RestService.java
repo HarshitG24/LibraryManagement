@@ -1,5 +1,4 @@
 package com.example.distributedsystems.distributed.systems.coordinator;
-//need to refactor
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;

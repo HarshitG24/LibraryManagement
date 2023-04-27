@@ -27,7 +27,7 @@ const Home = () => {
                     <div className="mb-2 text-muted">Total Books: {allBooks.length}</div>
                     {allBooks
                         .map((book, idx) => <div className="col" key={idx}>
-                                 <Card className="mb-3" style={{height: "520px", minWidth: "200px", maxWidth: "300px"}}>
+                                 <Card style={{height: "520px", minWidth: "200px", maxWidth: "300px"}}>
                                      <img src={book.image} className="card-img-top"
                                           style={{height: "300px", width: "auto"}} alt={book.title}/>
                                      <div className="card-body">

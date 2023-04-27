@@ -1,5 +1,6 @@
 package com.example.distributedsystems.distributed.systems.controller;
 
+import com.example.distributedsystems.distributed.systems.dsalgo.twopc.TwoPCPromise;
 import com.example.distributedsystems.distributed.systems.model.Server;
 import com.example.distributedsystems.distributed.systems.model.user.User;
 import com.example.distributedsystems.distributed.systems.service.ServerService;
@@ -47,13 +48,15 @@ public class ServerController {
 
     // refactor
     @PostMapping("/docommit")
-    public ResponseEntity<Boolean> doCommit(@RequestBody User user) {
+    public ResponseEntity<TwoPCPromise> doCommit(@RequestBody User user) {
+        TwoPCPromise promise;
         try {
-            userService.createUser(user);
+            promise = userService.createUser(user);
         } catch (IllegalArgumentException exception) {
             logger.info("Illegal Argument Exception: " + exception);
-            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+
+            return new ResponseEntity<>(new TwoPCPromise(false,exception.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        return new ResponseEntity<>(promise, HttpStatus.OK);
     }
 }
