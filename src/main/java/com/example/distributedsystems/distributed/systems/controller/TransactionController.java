@@ -5,6 +5,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosCont
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScenario;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaHandler;
+import com.example.distributedsystems.distributed.systems.model.Response;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import com.example.distributedsystems.distributed.systems.model.transaction.TransactionRequest;
 import com.example.distributedsystems.distributed.systems.model.transaction.TransactionResponse;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"*"})
 @RequestMapping("/transaction")
 public class TransactionController extends PaxosController {
   private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
@@ -48,29 +49,44 @@ public class TransactionController extends PaxosController {
   }
 
   @PostMapping("/createTransaction")
-  public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequest transactionRequest) {
+  public ResponseEntity<Response> createTransaction(@RequestBody TransactionRequest transactionRequest) {
     logger.info("Create transaction request received. " + transactionRequest);
     // Used Paxos for consensus
     PaxosTransaction paxosTransaction = new PaxosTransaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIsbns(), PaxosScenario.CHECKOUT);
+    ResponseEntity<Response> createTransactionResponse;
     try {
-      propose(paxosTransaction);
+      createTransactionResponse = propose(paxosTransaction);
     } catch (Exception e) {
       logger.error("Exception: " + e.getMessage());
       return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
     }
-    return new ResponseEntity<>(HttpStatus.OK);
+
+    return createTransactionResponse;
   }
 
 
   @PutMapping("/{transactionId}/book/{bookIsbn}")
-  public ResponseEntity<Object> markBookReturned(@PathVariable Long transactionId, @PathVariable Long bookIsbn) {
+  public ResponseEntity<Response> markBookReturned(@PathVariable Long transactionId, @PathVariable Long bookIsbn) {
     logger.info("Mark book return request received for Transaction(ID): " + transactionId + ", Book(ISBN): " + bookIsbn);
     List<Long> list = new ArrayList<>();
     list.add(bookIsbn);
     PaxosTransaction pt = new PaxosTransaction(transactionId, list, PaxosScenario.RETURN);
     // Used Paxos for consensus
-    propose(pt);
-    return new ResponseEntity<>(HttpStatus.OK);
+    ResponseEntity<Response> markBookReturnedResponse;
+    try {
+      markBookReturnedResponse = propose(pt);
+      Response responseStatus = markBookReturnedResponse.getBody();
+      assert responseStatus != null;
+      if (responseStatus.isSuccess()) {
+        Response responseObject = new Response(responseStatus.isSuccess(), responseStatus.getMessage(), bookIsbn, transactionId);
+        markBookReturnedResponse = new ResponseEntity<>(responseObject, HttpStatus.OK);
+      }
+    } catch (Exception e) {
+      logger.error("Exception: " + e.getMessage());
+      return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+    }
+
+    return markBookReturnedResponse;
   }
 
   @GetMapping("/unreturned/{username}")
@@ -87,7 +103,7 @@ public class TransactionController extends PaxosController {
     return new ResponseEntity<>(returnedBookIsbnsByTransaction, HttpStatus.OK);
   }
 
-  @GetMapping("/{username}")
+  @GetMapping("/user/{username}")
   public ResponseEntity<List<Transaction>> getAllTransactionByUserId(@PathVariable String username) {
     logger.info("Get all transactions request received for User: " + username);
     List<Transaction> transactions = transactionService.getAllTransactionsByUsername(username);

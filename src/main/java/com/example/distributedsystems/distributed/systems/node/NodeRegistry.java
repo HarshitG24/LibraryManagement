@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -36,10 +39,29 @@ public class NodeRegistry {
 
   public Set<String> getActiveNodes() {
     Set<Object> keys = hazelcastInstance.getMap("activeNodes").keySet();
-    return keys.stream().map(Object::toString).collect(Collectors.toSet());
-  }
+    try {
+//      File myObj = new File("../../../../../../../../../log.txt");
+//      myObj.createNewFile();
+      FileWriter myWriter = new FileWriter("./client/src/log.txt", false);
 
-  public void removeNodeFromActiveNodes(String nodeAddress) {
+      for (Object k : keys) {
+        try {
+          myWriter.write(k.toString() + "\n");
+//          myWriter.close();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+//        System.out.println(k.toString());
+      }
+
+      myWriter.close();
+
+      return keys.stream().map(Object::toString).collect(Collectors.toSet());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+    public void removeNodeFromActiveNodes(String nodeAddress) {
     hazelcastInstance.getMap("activeNodes").remove(nodeAddress);
   }
 

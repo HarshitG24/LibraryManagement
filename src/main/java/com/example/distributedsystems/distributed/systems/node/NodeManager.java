@@ -26,12 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import jakarta.annotation.PreDestroy;
 
 
 @Service
@@ -48,14 +46,10 @@ public class NodeManager {
     private CartBookInterface cartBookRepository;
     private TransactionInterface transactionRepository;
     private UserInterface userRepository;
+    private final String address = InetAddress.getLoopbackAddress().getHostAddress();
 
     @Autowired
     private NodeRegistry nodeRegistry;
-
-    @Autowired
-    private HazelcastInstance hazelcastInstance;
-
-    private UUID lifecycleListenerId;
 
     @Autowired
     private VectorTimestampService vectorTimestampService;
@@ -86,10 +80,11 @@ public class NodeManager {
     }
 
     public void startNode() {
+
         // Register the node
         String nodeAddress = getNodeAddress();
         logger.info("Registering node");
-        lifecycleListenerId = nodeRegistry.registerNode(nodeAddress);
+        UUID lifecycleListenerId = nodeRegistry.registerNode(nodeAddress);
         logger.info("Current active nodes for port " + serverPort + ": " + nodeRegistry.getActiveNodes());
 
         // Synchronize data from an existing node
@@ -203,12 +198,6 @@ public class NodeManager {
     }
 
     public String getNodeAddress() {
-        try {
-            InetAddress address = InetAddress.getLocalHost();
-            return "http://" + address.getHostAddress() + ":" + serverPort;
-        } catch (UnknownHostException ex) {
-            // Handle exception
-            return null;
-        }
+        return "http://" + address + ":" + serverPort;
     }
 }

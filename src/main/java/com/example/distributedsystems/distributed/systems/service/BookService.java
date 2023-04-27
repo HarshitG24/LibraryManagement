@@ -1,5 +1,6 @@
 package com.example.distributedsystems.distributed.systems.service;
 
+import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScenario;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.repository.BookInterface;
 
@@ -33,10 +34,10 @@ public class BookService {
   public int updateBookInventoryByIsbn(Long isbn, String operation) {
     Book book = bookInterface.getBookByIsbn(isbn);
     int inventory = book.getInventory();
-    if (operation.equalsIgnoreCase("LOAN")) {
-      inventory = -1;
-    } else if (operation.equalsIgnoreCase("RETURN")) {
-      inventory = 1;
+    if (operation.equalsIgnoreCase(PaxosScenario.LOAN.toString())) {
+      inventory = inventory - 1;
+    } else if (operation.equalsIgnoreCase(PaxosScenario.RETURN.toString())) {
+      inventory = inventory + 1;
     }
     return bookInterface.updateBookInventoryByIsbn(isbn, inventory);
   }

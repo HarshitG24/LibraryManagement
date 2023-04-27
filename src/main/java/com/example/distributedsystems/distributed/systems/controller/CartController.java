@@ -6,6 +6,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScen
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaHandler;
 import com.example.distributedsystems.distributed.systems.model.Book;
+import com.example.distributedsystems.distributed.systems.model.Response;
 import com.example.distributedsystems.distributed.systems.model.cart.Cart;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBook;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBookId;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"*"})
 @RequestMapping("/cart")
 public class CartController extends PaxosController {
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);
@@ -81,33 +82,63 @@ public class CartController extends PaxosController {
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Object> addBookToCart(@RequestBody CartRequest content) {
+    public ResponseEntity<Response> addBookToCart(@RequestBody CartRequest content) {
         logger.info("Add book to cart request received. CartRequest: " + content);
         List<Long> list = new ArrayList<>();
         list.add(content.getIsbn());
         // Used Paxos for consensus
-        PaxosTransaction pt = new PaxosTransaction(content.getUsername(), list, PaxosScenario.LOAN);
-        propose(pt);
-        return new ResponseEntity<>(content.getIsbn(), HttpStatus.OK);
+        PaxosTransaction paxosTransaction = new PaxosTransaction(content.getUsername(), list, PaxosScenario.LOAN);
+        ResponseEntity<Response> addBookResponse;
+        try {
+            addBookResponse = propose(paxosTransaction);
+            Response responseStatus = addBookResponse.getBody();
+            assert responseStatus != null;
+            if (responseStatus.isSuccess()) {
+                Response responseObject = new Response(responseStatus.isSuccess(), responseStatus.getMessage(), content.getIsbn(), null);
+                addBookResponse = new ResponseEntity<>(responseObject, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            logger.error("Exception: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+        return addBookResponse;
     }
 
     @DeleteMapping("/{username}/book/{isbn}")
-    public ResponseEntity<Object> deleteBookFromCartForUser(@PathVariable String username, @PathVariable Long isbn) {
+    public ResponseEntity<Response> deleteBookFromCartForUser(@PathVariable String username, @PathVariable Long isbn) {
         logger.info("Delete book from cart request received for User: " + username + ", ISBN: " + isbn);
         List<Long> list = new ArrayList<>();
         list.add(isbn);
-        PaxosTransaction pt = new PaxosTransaction(username, list, PaxosScenario.DELETE_BOOK);
+        PaxosTransaction paxosTransaction = new PaxosTransaction(username, list, PaxosScenario.DELETE_BOOK);
         // Used Paxos for consensus
-        propose(pt);
-        return new ResponseEntity<>(isbn, HttpStatus.OK);
+        ResponseEntity<Response> deleteBookResponse;
+        try {
+            deleteBookResponse = propose(paxosTransaction);
+            Response responseStatus = deleteBookResponse.getBody();
+            assert responseStatus != null;
+            if (responseStatus.isSuccess()) {
+                Response responseObject = new Response(responseStatus.isSuccess(), responseStatus.getMessage(), isbn, null);
+                deleteBookResponse = new ResponseEntity<>(responseObject, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            logger.error("Exception: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+        return deleteBookResponse;
     }
 
     @DeleteMapping("/{username}")
-    public ResponseEntity<Object> deleteCartByUsername(@PathVariable String username) {
+    public ResponseEntity<Response> deleteCartByUsername(@PathVariable String username) {
         logger.info("Delete cart request received for User: " + username);
         // Used Paxos for consensus
-        PaxosTransaction pt = new PaxosTransaction(username, PaxosScenario.DELETE_CART);
-        propose(pt);
-        return new ResponseEntity<>(HttpStatus.OK);
+        PaxosTransaction paxosTransaction = new PaxosTransaction(username, PaxosScenario.DELETE_CART);
+        ResponseEntity<Response> deleteCartResponse;
+        try {
+            deleteCartResponse = propose(paxosTransaction);
+        } catch (Exception e) {
+            logger.error("Exception: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+        return deleteCartResponse;
     }
 }
