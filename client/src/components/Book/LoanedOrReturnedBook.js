@@ -10,10 +10,8 @@ import { Link } from "react-router-dom";
 const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.user);
-  const { error } = useSelector((state) => state.cartData);
   const [book, setBook] = useState(null);
   const [reload, setReload] = useState(false);
-  const [bookAdded, setBookAdded] = useState(false);
 
   useEffect(() => {
     dispatch(getBookByIsbnThunk({ isbn }))
@@ -45,13 +43,18 @@ const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
         console.error(error);
       });
     setReload(!reload); // Toggle the reload state
-    // window.location.reload();
   };
 
-  useEffect(() => {
-    if (bookAdded) {
-      if (!error) {
-        toast.success(`Book ${book.isbn} successfully added to Shopping cart!`, {
+  const handleAddToCart = () => {
+    debugger
+    dispatch(
+        cartAddBookThunk({
+                           username: profile.username,
+                           isbn: book.isbn,
+                         })
+    ).then((response) => {
+      if (response.payload.success) {
+        toast.success("Book successfully added to Shopping cart!", {
           position: "bottom-right",
           autoClose: 500,
           hideProgressBar: true,
@@ -72,19 +75,11 @@ const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
           progress: undefined,
           theme: "colored",
         });
-        setBookAdded(false)
       }
-    }
-  }, [bookAdded]);
 
-  const handleAddToCart = () => {
-    dispatch(
-      cartAddBookThunk({
-        username: profile.username,
-        isbn: book.isbn,
-      })
-    );
-    setBookAdded(true);
+    }).catch(error => {
+      console.log(error)
+    })
   };
 
   return (

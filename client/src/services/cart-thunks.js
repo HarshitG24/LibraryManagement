@@ -1,6 +1,5 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import textFile from "../log.txt";
 
 const CART_API = `http://localhost:${process.env.REACT_APP_SERVER_PORT}/cart`;
 
