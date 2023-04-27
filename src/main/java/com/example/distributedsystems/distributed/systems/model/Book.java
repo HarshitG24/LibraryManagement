@@ -1,5 +1,6 @@
 package com.example.distributedsystems.distributed.systems.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -10,6 +11,7 @@ public class Book {
   @Id
   private Long isbn;
   private String name;
+  @Column(length = 3000)
   private String description;
   private String image;
   private Integer inventory;
