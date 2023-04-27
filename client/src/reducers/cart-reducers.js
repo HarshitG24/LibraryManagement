@@ -58,7 +58,7 @@ const shoppingCartSlice = createSlice(
                 },
             [cartAddBookThunk.rejected]:
                 (state, action) => {
-                    state.error = action.payload?.message || action.payload === '' || action.error
+                    state.error = action.error
                 },
             [cartDeleteBookThunk.fulfilled]:
                 (state, { payload }) => {
@@ -70,7 +70,7 @@ const shoppingCartSlice = createSlice(
                 },
             [cartDeleteBookThunk.rejected]:
                 (state, action) => {
-                    state.error = action.payload?.message || action.payload === '' || action.error
+                    state.error = action.error
                 }
         }
     });

@@ -58,7 +58,11 @@ const Book = () => {
         });
         setBookAdded(false)
       }
-    } else if (bookRemoved) {
+    }
+  }, [bookAdded]);
+
+  useEffect(() => {
+    if (bookRemoved) {
       debugger
       if (!error) {
         toast.success("Book successfully removed from Shopping cart!", {
@@ -86,7 +90,7 @@ const Book = () => {
         setBookRemoved(false)
       }
     }
-  }, [bookRemoved, bookAdded]);
+  }, [bookRemoved])
 
   const handleAddToCart = () => {
     dispatch(
