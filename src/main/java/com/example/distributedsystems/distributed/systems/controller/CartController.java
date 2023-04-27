@@ -6,6 +6,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScen
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTransaction;
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaHandler;
 import com.example.distributedsystems.distributed.systems.model.Book;
+import com.example.distributedsystems.distributed.systems.model.Response;
 import com.example.distributedsystems.distributed.systems.model.cart.Cart;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBook;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBookId;
@@ -81,50 +82,71 @@ public class CartController extends PaxosController {
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Object> addBookToCart(@RequestBody CartRequest content) {
+    public ResponseEntity<Response> addBookToCart(@RequestBody CartRequest content) {
         logger.info("Add book to cart request received. CartRequest: " + content);
         List<Long> list = new ArrayList<>();
         list.add(content.getIsbn());
         // Used Paxos for consensus
         PaxosTransaction pt = new PaxosTransaction(content.getUsername(), list, PaxosScenario.LOAN);
+        ResponseEntity<Response> ans;
         try {
-            propose(pt);
+            ans = propose(pt);
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-        return new ResponseEntity<>(content.getIsbn(), HttpStatus.OK);
+
+        return ans;
+//        return new ResponseEntity<>(content.getIsbn(), HttpStatus.OK);
     }
 
     @DeleteMapping("/{username}/book/{isbn}")
-    public ResponseEntity<Object> deleteBookFromCartForUser(@PathVariable String username, @PathVariable Long isbn) {
+    public ResponseEntity<Response> deleteBookFromCartForUser(@PathVariable String username, @PathVariable Long isbn) {
         logger.info("Delete book from cart request received for User: " + username + ", ISBN: " + isbn);
         List<Long> list = new ArrayList<>();
         list.add(isbn);
         PaxosTransaction pt = new PaxosTransaction(username, list, PaxosScenario.DELETE_BOOK);
         // Used Paxos for consensus
 //        propose(pt);
+//        try {
+//            propose(pt);
+//        } catch (Exception e) {
+//            logger.error("Exception: " + e.getMessage());
+//            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+//        }
+//        return new ResponseEntity<>(isbn, HttpStatus.OK);
+        ResponseEntity<Response> ans;
         try {
-            propose(pt);
+            ans = propose(pt);
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-        return new ResponseEntity<>(isbn, HttpStatus.OK);
+
+        return ans;
     }
 
     @DeleteMapping("/{username}")
-    public ResponseEntity<Object> deleteCartByUsername(@PathVariable String username) {
+    public ResponseEntity<Response> deleteCartByUsername(@PathVariable String username) {
         logger.info("Delete cart request received for User: " + username);
         // Used Paxos for consensus
         PaxosTransaction pt = new PaxosTransaction(username, PaxosScenario.DELETE_CART);
 //        propose(pt);
+//        try {
+//            propose(pt);
+//        } catch (Exception e) {
+//            logger.error("Exception: " + e.getMessage());
+//            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+//        }
+//        return new ResponseEntity<>(HttpStatus.OK);
+        ResponseEntity<Response> ans;
         try {
-            propose(pt);
+            ans = propose(pt);
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        return ans;
     }
 }
