@@ -5,6 +5,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosTran
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.Promise;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import com.example.distributedsystems.distributed.systems.repository.PxRepository;
+import com.example.distributedsystems.distributed.systems.service.BookService;
 import com.example.distributedsystems.distributed.systems.service.CartService;
 import com.example.distributedsystems.distributed.systems.service.TransactionService;
 
@@ -35,6 +36,9 @@ public class PXController {
 
     @Autowired
     private TransactionService transactionService;
+
+    @Autowired
+    private BookService bookService;
 
     @Autowired
     private CartService cartService;
@@ -113,6 +117,7 @@ public class PXController {
     public void checkout(PaxosTransaction pt){
         Transaction transaction = new Transaction(pt.getTransactionId(), pt.getUserId(), pt.getAllBooks());
         Transaction savedTransaction = transactionService.createTransaction(transaction);
+
         transactionService.createTransaction(savedTransaction);
     }
 

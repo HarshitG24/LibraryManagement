@@ -87,7 +87,7 @@ public class TransactionController extends PaxosController {
     return new ResponseEntity<>(returnedBookIsbnsByTransaction, HttpStatus.OK);
   }
 
-  @GetMapping("/{username}")
+  @GetMapping("/user/{username}")
   public ResponseEntity<List<Transaction>> getAllTransactionByUserId(@PathVariable String username) {
     logger.info("Get all transactions request received for User: " + username);
     List<Transaction> transactions = transactionService.getAllTransactionsByUsername(username);
