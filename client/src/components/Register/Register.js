@@ -28,7 +28,7 @@ const Register = () => {
                 firstName: firstName,
                 lastName: lastName,
                 email,
-                address: address,
+                ...address,
                 phone,
             }
             dispatch(userRegisterThunk(newUser))
