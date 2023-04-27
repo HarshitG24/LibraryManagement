@@ -52,31 +52,19 @@ public class UserController extends TwoPCController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-//    @PostMapping("")
-//    public ResponseEntity<Object> createUser(@RequestBody CreateUserRequest request) {
-//        logger.info("Create user request received. UserRequest: " + request);
-//        User.Address address = new User.Address(request.getAddress1(), request.getAddress2(), request.getCity(), request.getState(), request.getZipcode());
-//        User user = new User(request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword(), request.getUsername(), request.getPhone(), address);
-//        userService.createUser(user);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
-
     @PostMapping("/createUser")
     public ResponseEntity<Response> createUser(@RequestBody CreateUserRequest request) {
-
         logger.info("Create user request received. UserRequest: " + request);
         User.Address address = new User.Address(request.getAddress1(), request.getAddress2(), request.getCity(), request.getState(), request.getZipcode());
         User user = new User(request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword(), request.getUsername(), request.getPhone(), address);
-//        employeeService.createEmployee(e);
-        ResponseEntity<Response> createUserReponse;
+        ResponseEntity<Response> createUserResponse;
         try{
-            createUserReponse = performTransaction(user);
+            createUserResponse = performTransaction(user);
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
 
-        return createUserReponse;
-//        return new ResponseEntity<>(users, HttpStatus.OK);
+        return createUserResponse;
     }
 }

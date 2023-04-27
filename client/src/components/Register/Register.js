@@ -31,20 +31,35 @@ const Register = () => {
                 ...address,
                 phone,
             }
-            dispatch(userRegisterThunk(newUser))
+            dispatch(userRegisterThunk(newUser)).then(response => {
+                if (response.payload.success) {
+                    toast.success('Registered successfully! :)', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "colored",
+                    });
+                    navigate('/login')
+                } else {
+                    toast.error('Could not register user! Make sure username and email are unique.', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "colored",
+                    });
+                }
+            })
 
 
-        toast.success('Registered successfully! :)', {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-        });
-        navigate('/login')
+
     }
 
     const onFinishFailed = (errorInfo) => {
