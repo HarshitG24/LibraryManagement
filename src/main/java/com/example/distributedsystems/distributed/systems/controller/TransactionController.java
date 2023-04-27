@@ -69,7 +69,12 @@ public class TransactionController extends PaxosController {
     list.add(bookIsbn);
     PaxosTransaction pt = new PaxosTransaction(transactionId, list, PaxosScenario.RETURN);
     // Used Paxos for consensus
-    propose(pt);
+    try {
+      propose(pt);
+    } catch (Exception e) {
+      logger.error("Exception: " + e.getMessage());
+      return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+    }
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

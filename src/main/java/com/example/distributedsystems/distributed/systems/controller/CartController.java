@@ -87,7 +87,12 @@ public class CartController extends PaxosController {
         list.add(content.getIsbn());
         // Used Paxos for consensus
         PaxosTransaction pt = new PaxosTransaction(content.getUsername(), list, PaxosScenario.LOAN);
-        propose(pt);
+        try {
+            propose(pt);
+        } catch (Exception e) {
+            logger.error("Exception: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
         return new ResponseEntity<>(content.getIsbn(), HttpStatus.OK);
     }
 
@@ -98,7 +103,13 @@ public class CartController extends PaxosController {
         list.add(isbn);
         PaxosTransaction pt = new PaxosTransaction(username, list, PaxosScenario.DELETE_BOOK);
         // Used Paxos for consensus
-        propose(pt);
+//        propose(pt);
+        try {
+            propose(pt);
+        } catch (Exception e) {
+            logger.error("Exception: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
         return new ResponseEntity<>(isbn, HttpStatus.OK);
     }
 
@@ -107,7 +118,13 @@ public class CartController extends PaxosController {
         logger.info("Delete cart request received for User: " + username);
         // Used Paxos for consensus
         PaxosTransaction pt = new PaxosTransaction(username, PaxosScenario.DELETE_CART);
-        propose(pt);
+//        propose(pt);
+        try {
+            propose(pt);
+        } catch (Exception e) {
+            logger.error("Exception: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
