@@ -19,8 +19,6 @@ import Loans from "./components/Loans/Loan";
 // dotenv.config();
 
 function App() {
-  const port = process.env.REACT_APP_SERVER_PORT;
-  console.log("port is: ", port);
   return (
     <div style={{ width: "100%" }}>
       <BrowserRouter>

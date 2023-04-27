@@ -2,7 +2,7 @@ import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import textFile from "../../src/log.txt";
 
-const BOOKS_API = "http://localhost:8080/book";
+const BOOKS_API = `http://localhost:${process.env.REACT_APP_SERVER_PORT}/book`;
 
 export const getAllBooksThunk = createAsyncThunk("books/all", async () => {
   const response = await axios.get(`${BOOKS_API}`);
