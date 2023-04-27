@@ -33,7 +33,6 @@ public class TwoPCController {
     public  ResponseEntity<Response> performTransaction(User emp) {
         System.out.println("entered user is: " + emp);
         try{
-
             Set<String> ports = nodeRegistry.getActiveNodes();
             for(String a:ports){
                 System.out.println("port address is:"+a);
@@ -63,7 +62,7 @@ public class TwoPCController {
             }
             logger.info("TwoPC consensus reached");
 
-            // commit phase as consesnus acheived
+            // commit phase as consensus achieved
             executor = Executors.newFixedThreadPool(10);
             for(String a:ports){
                 executor.execute(() -> {
