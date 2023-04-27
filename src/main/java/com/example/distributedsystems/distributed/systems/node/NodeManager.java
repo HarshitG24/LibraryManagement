@@ -46,6 +46,7 @@ public class NodeManager {
     private CartBookInterface cartBookRepository;
     private TransactionInterface transactionRepository;
     private UserInterface userRepository;
+    private final String address = InetAddress.getLoopbackAddress().getHostAddress();
 
     @Autowired
     private NodeRegistry nodeRegistry;
@@ -197,7 +198,6 @@ public class NodeManager {
     }
 
     public String getNodeAddress() {
-        InetAddress address = InetAddress.getLoopbackAddress();
-        return "http://" + address.getHostAddress() + ":" + serverPort;
+        return "http://" + address + ":" + serverPort;
     }
 }
