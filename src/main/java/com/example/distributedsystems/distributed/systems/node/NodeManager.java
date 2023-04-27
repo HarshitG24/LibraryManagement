@@ -1,5 +1,8 @@
 package com.example.distributedsystems.distributed.systems.node;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import com.example.distributedsystems.distributed.systems.dsalgo.vectortimestamps.VectorTimestampService;
 import com.example.distributedsystems.distributed.systems.model.Book;
 import com.example.distributedsystems.distributed.systems.model.cart.Cart;
@@ -7,12 +10,14 @@ import com.example.distributedsystems.distributed.systems.model.cart.CartBook;
 import com.example.distributedsystems.distributed.systems.model.cart.CartBookId;
 import com.example.distributedsystems.distributed.systems.model.cart.CartDTO;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
+import com.example.distributedsystems.distributed.systems.model.user.CreateUserRequest;
 import com.example.distributedsystems.distributed.systems.model.user.User;
 import com.example.distributedsystems.distributed.systems.repository.BookInterface;
 import com.example.distributedsystems.distributed.systems.repository.CartInterface;
 import com.example.distributedsystems.distributed.systems.repository.TransactionInterface;
 import com.example.distributedsystems.distributed.systems.repository.UserInterface;
 import com.example.distributedsystems.distributed.systems.service.CartBookInterface;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hazelcast.core.HazelcastInstance;
 
 import org.slf4j.Logger;
@@ -25,7 +30,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Type;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -91,6 +102,8 @@ public class NodeManager {
         String existingNodeAddress = getAnExistingNodeAddress();
         if (existingNodeAddress != null) {
             synchronizeDataFromNode(existingNodeAddress);
+        } else {
+            initializeData();
         }
         // Initialize the vector timestamp for the current new node
         updateVectorTimestampsForAllNodesExceptCurrent();
@@ -103,6 +116,40 @@ public class NodeManager {
             if (!nodeAddress.equals(currentNodeAddress)) {
                 restTemplate.postForEntity(nodeAddress + "/vectorTimestamps/update", null, String.class);
             }
+        }
+    }
+
+    public void initializeData() {
+        //Adding users data
+        List<User> existingUsers = (List<User>) userRepository.findAll();
+        if (!existingUsers.iterator().hasNext()){
+            try {
+                Gson gson = new Gson();
+                Reader reader = new FileReader("src/main/java/com/example/distributedsystems/distributed/systems/data/users.json");
+                CreateUserRequest[] createUserRequests = gson.fromJson(reader, CreateUserRequest[].class);
+                List<User> users = new ArrayList<>();
+                for (CreateUserRequest request : createUserRequests) {
+                    User.Address address = new User.Address(request.getAddress1(), request.getAddress2(), request.getCity(), request.getState(), request.getZipcode());
+                    User user = new User(request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword(), request.getUsername(), request.getPhone(), address);
+                    users.add(user);
+                }
+                logger.info("Initializing User data");
+                userRepository.saveAll(users);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        //Adding books data
+        try {
+            Gson gson = new Gson();
+            Reader reader = new FileReader("src/main/java/com/example/distributedsystems/distributed/systems/data/books.json");
+            Type listType = new TypeToken<List<Book>>() {}.getType();
+            List<Book> books = gson.fromJson(reader, listType);
+            logger.info("Initializing Book data");
+            bookRepository.saveAll(books);
+        } catch (IOException e) {
+            logger.error(e.getMessage());
         }
     }
 
@@ -158,12 +205,18 @@ public class NodeManager {
         // Populate the new node's database with the fetched data
         // User
         if (userData != null) {
+            System.out.println("UserData: " + userData);
             userRepository.saveAll(userData);
+        } else {
+            System.out.println("user null");
         }
 
         // Book
         if (bookData != null) {
+            System.out.println("Book Data: " + bookData);
             bookRepository.saveAll(bookData);
+        } else {
+            System.out.println("book null");
         }
 
         // Cart and CartBook data

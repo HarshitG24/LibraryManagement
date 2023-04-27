@@ -92,7 +92,7 @@ public class TwoPCController {
             try {
                 executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
             } catch (InterruptedException e) {
-                logger.error("TwoPC commit failed, now rolling back...");
+                logger.error(e.getMessage());
                 return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
@@ -104,6 +104,6 @@ public class TwoPCController {
         } catch (Exception e) {
             return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(new TwoPCPromise(true, "Registration Successful"), HttpStatus.OK);
+        return new ResponseEntity<>(new TwoPCPromise(true, "TwoPC committed"), HttpStatus.OK);
     }
 }

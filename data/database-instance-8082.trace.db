@@ -1,0 +1,3 @@
+2023-04-23 18:30:29 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * [*]FROMTRANSACTION_BOOK_STATUS"; SQL statement:
+SELECT * FROMTRANSACTION_BOOK_STATUS [42000-214]
