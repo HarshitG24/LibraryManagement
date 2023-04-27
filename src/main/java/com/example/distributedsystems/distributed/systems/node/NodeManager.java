@@ -133,7 +133,7 @@ public class NodeManager {
                     User user = new User(request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword(), request.getUsername(), request.getPhone(), address);
                     users.add(user);
                 }
-                logger.info("Initializing User data. User data: " + users);
+                logger.info("Initializing User data");
                 userRepository.saveAll(users);
             } catch (IOException e) {
                 logger.error(e.getMessage());
@@ -146,7 +146,7 @@ public class NodeManager {
             Reader reader = new FileReader("src/main/java/com/example/distributedsystems/distributed/systems/data/books.json");
             Type listType = new TypeToken<List<Book>>() {}.getType();
             List<Book> books = gson.fromJson(reader, listType);
-            logger.info("Initializing Book data. User data: " + books);
+            logger.info("Initializing Book data");
             bookRepository.saveAll(books);
         } catch (IOException e) {
             logger.error(e.getMessage());

@@ -6,8 +6,6 @@ import {toast, ToastContainer} from "react-toastify";
 import {cartAddBookThunk, cartDeleteBookThunk} from "../../services/cart-thunks";
 import {Tag} from "antd";
 
-// import fs from "fs";
-
 // Reload the book using api call to have up to date inventory
 const Book = () => {
     const dispatch = useDispatch();
