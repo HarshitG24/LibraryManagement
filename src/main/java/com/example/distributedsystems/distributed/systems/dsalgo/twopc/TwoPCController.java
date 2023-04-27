@@ -1,11 +1,13 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.twopc;
 
 import com.example.distributedsystems.distributed.systems.coordinator.RestService;
+import com.example.distributedsystems.distributed.systems.model.Response;
 import com.example.distributedsystems.distributed.systems.model.user.User;
 import com.example.distributedsystems.distributed.systems.node.NodeManager;
 import com.example.distributedsystems.distributed.systems.node.NodeRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -30,7 +32,7 @@ public class TwoPCController {
     @Autowired
     private ServerProperties serverProperties;
 
-    public  ResponseEntity<Object> performTransaction(User emp) {
+    public  ResponseEntity<Response> performTransaction(User emp) {
         System.out.println("entered user is: " + emp);
         try{
             List<Integer> allPorts = new ArrayList<>();
@@ -72,14 +74,18 @@ public class TwoPCController {
             executor.shutdown(); // To execute the above tasks, which is to send the commit message to all the replica together and not one after other.
             try {
                 executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
+
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                return new ResponseEntity<>(new Response(false, "TwoPC Failed to reach consensus for the proposal"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             if(ackCount != ports.size()){
                 System.out.println("fail to reach consensus");
+                return new ResponseEntity<>(new Response(false, "TwoPC Failed to reach consensus for the proposal"), HttpStatus.INTERNAL_SERVER_ERROR);
+
             }
 
+            System.out.println("TwoPC consesus reached");
             // commit phase as consesnus acheived
 
             executor = Executors.newFixedThreadPool(10);
@@ -96,19 +102,25 @@ public class TwoPCController {
                 });
             }
 
-            executor.shutdown(); // To execute the above tasks, which is to send the commit message to all the replica together and not one after other.
+            executor.shutdown();// To execute the above tasks, which is to send the commit message to all the replica together and not one after other.
+            System.out.println("TwoPC commit successful");
             try {
                 executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                System.out.println("TwoPC commit failed, Rolling back");
+                return new ResponseEntity<>(new Response(false, "TwoPC Failed to commit, now rolling back..."), HttpStatus.INTERNAL_SERVER_ERROR);
+
+
             }
 
             ackCount = 0;
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return new ResponseEntity<>(new Response(false, "TwoPC Failed to commit, now rolling back..."), HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
-        return null;
+        return new ResponseEntity<>(new Response(true, "TwoPC committed"), HttpStatus.OK);
+
     }
 
 
