@@ -54,12 +54,12 @@ public class TwoPCController {
             try {
                 executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
             } catch (InterruptedException e) {
-                logger.error("TwoPC Failed to reach consensus for the proposal");
-                return new ResponseEntity<>(new TwoPCPromise(false, "TwoPC Failed to reach consensus for the proposal"), HttpStatus.INTERNAL_SERVER_ERROR);
+                logger.error(e.getMessage());
+                return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             if(ackCount != ports.size()){
                 logger.error("TwoPC Failed to reach consensus for the proposal");
-                return new ResponseEntity<>(new TwoPCPromise(false, "TwoPC Failed to reach consensus for the proposal"), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             logger.info("TwoPC consensus reached");
 
@@ -92,8 +92,8 @@ public class TwoPCController {
             try {
                 executor.awaitTermination(10, TimeUnit.SECONDS); // We perform this blocking operation to finish the execution of the above tasks
             } catch (InterruptedException e) {
-                logger.error("TwoPC commit failed, now rolling back...");
-                return new ResponseEntity<>(new TwoPCPromise(false, "TwoPC Failed to commit"), HttpStatus.INTERNAL_SERVER_ERROR);
+                logger.error(e.getMessage());
+                return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             if(ackCount != ports.size()){
@@ -102,7 +102,7 @@ public class TwoPCController {
             }
             ackCount = 0;
         } catch (Exception e) {
-            return new ResponseEntity<>(new TwoPCPromise(false, "TwoPC Failed to commit"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<>(new TwoPCPromise(true, "TwoPC committed"), HttpStatus.OK);
     }
