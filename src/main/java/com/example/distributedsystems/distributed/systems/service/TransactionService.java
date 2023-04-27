@@ -25,6 +25,9 @@ public class TransactionService {
   @Autowired
   private BookService bookService;
 
+  @Autowired
+  private CartService cartService;
+
   public List<Transaction> getAllTransactions() {
     return (List<Transaction>) transactionInterface.findAll();
   }
@@ -61,7 +64,9 @@ public class TransactionService {
         logger.error("Cannot loan book! Book " + isbn + "is not in stock!");
       }
     }
-    return transactionInterface.save(transaction);
+    Transaction savedTransaction = transactionInterface.save(transaction);
+    cartService.deleteCartByUsername(transaction.getUsername());
+    return savedTransaction;
   }
 
 }

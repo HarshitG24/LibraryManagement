@@ -1,40 +1,38 @@
 package com.example.distributedsystems.distributed.systems.model;
 
 public class Response {
-    private boolean ans;
-    private String msg;
-
+    private boolean isSuccess;
+    private String message;
     private Long isbn;
-
     private Long transactionId;
 
 
-    public Response(boolean ans, String msg) {
-        this.ans = ans;
-        this.msg = msg;
+    public Response(boolean isSuccess, String message) {
+        this.isSuccess = isSuccess;
+        this.message = message;
     }
 
-    public Response(boolean ans, String msg, Long isbn, Long transactionId) {
-        this.ans = ans;
-        this.msg = msg;
+    public Response(boolean isSuccess, String message, Long isbn, Long transactionId) {
+        this.isSuccess = isSuccess;
+        this.message = message;
         this.isbn = isbn;
         this.transactionId = transactionId;
     }
 
-    public void setAns(boolean ans) {
-        this.ans = ans;
+    public void setSuccess(boolean success) {
+        this.isSuccess = success;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public boolean isAns() {
-        return ans;
+    public boolean isSuccess() {
+        return isSuccess;
     }
 
     public Long getIsbn() {

@@ -115,7 +115,7 @@ public class PXController {
     }
 
     public void checkout(PaxosTransaction pt){
-        Transaction transaction = new Transaction(pt.getTransactionId(), pt.getUserId(), pt.getAllBooks());
+        Transaction transaction = new Transaction(pt.getTransactionId(), pt.getUsername(), pt.getAllBooks());
         Transaction savedTransaction = transactionService.createTransaction(transaction);
 
         transactionService.createTransaction(savedTransaction);
@@ -126,14 +126,14 @@ public class PXController {
     }
 
     public void loan(PaxosTransaction pt){
-        cartService.updateCartForUser(pt.getUserId(), pt.getAllBooks().get(0));
+        cartService.updateCartForUser(pt.getUsername(), pt.getAllBooks().get(0));
     }
 
     public void deleteBook(PaxosTransaction pt){
-        cartService.deleteBookFromCartForUser(pt.getUserId(), pt.getAllBooks().get(0));
+        cartService.deleteBookFromCartForUser(pt.getUsername(), pt.getAllBooks().get(0));
     }
 
     public void deleteCart(PaxosTransaction pt){
-        cartService.deleteCartByUsername(pt.getUserId());
+        cartService.deleteCartByUsername(pt.getUsername());
     }
 }

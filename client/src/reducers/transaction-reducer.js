@@ -26,17 +26,27 @@ const loanSlice = createSlice({
       state.error = null;
     },
     [createTransactionThunk.rejected]: (state, action) => {
-      state.error = action.error;
+      state.error = action.payload?.message || action.payload === '' || action.error
     },
 
     [markBookAsReturnedThunk.pending]: (state) => {
       state.error = null;
     },
-    [markBookAsReturnedThunk.fulfilled]: (state) => {
+    [markBookAsReturnedThunk.fulfilled]: (state, { payload }) => {
       state.error = null;
+      state.loanedBooksByTransaction = state.loanedBooksByTransaction.map(transaction => {
+        if (transaction.transactionId === payload.transactionId) {
+          const updatedBookIsbns = transaction.bookIsbns.filter(isbn => isbn !== payload.isbn);
+          return {
+            ...transaction,
+            bookIsbns: updatedBookIsbns,
+          };
+        }
+        return transaction;
+      });
     },
     [markBookAsReturnedThunk.rejected]: (state, action) => {
-      state.error = action.error;
+      state.error = action.payload?.message || action.payload === '' || action.error
     },
 
     [getAllNotReturnedBooksThunk.pending]: (state) => {

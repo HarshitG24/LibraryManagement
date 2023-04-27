@@ -1,17 +1,50 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import { Button, Tag } from "antd";
 import { cartDeleteBookThunk } from "../../services/cart-thunks";
+import {toast, ToastContainer} from "react-toastify";
+import {Link} from "react-router-dom";
 
 const CartItem = ({ book, user }) => {
 
     const dispatch = useDispatch();
+    const { error } = useSelector(state => state.cartData);
+    const [bookDeleted, setBookDeleted] = useState(false);
 
+    useEffect(() => {
+        if (bookDeleted) {
+            if (!error) {
+                toast.success(`Book ${book.isbn} successfully deleted from Shopping cart!`, {
+                    position: "bottom-right",
+                    autoClose: 500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                });
+            } else {
+                toast.error("Could not delete book from Shopping cart. Try again!", {
+                    position: "bottom-right",
+                    autoClose: 500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                });
+                setBookDeleted(false);
+            }
+        }
+    }, [])
     const handleDelete = () => {
         dispatch(cartDeleteBookThunk({
             username: user.username,
             isbn: book.isbn
         }))
+        setBookDeleted(true);
     }
 
     return (<>
@@ -23,7 +56,10 @@ const CartItem = ({ book, user }) => {
 
                 <div className="col-10 col-lg-10 col-md-9">
                         <div className="col-10">
-                            <div className="wd-light-text fw-bold">{book.name}</div>
+                            <Link
+                                to={`/books/${book.isbn}`}
+                                style={{textDecoration: "none"}}
+                            ><div className="wd-light-text fw-bold">{book.name}</div></Link>
                             <div className="small mt-1 mb-2">{book.description}</div>
 
                             <div className="small">ISBN: {book.isbn}</div>
@@ -38,6 +74,7 @@ const CartItem = ({ book, user }) => {
                 </div>
             </div>
         </li>}
+        <ToastContainer />
     </>);
 }
 

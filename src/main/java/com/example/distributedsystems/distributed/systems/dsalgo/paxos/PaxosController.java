@@ -7,6 +7,7 @@ import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaRelease;
 import com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala.RicartAgrawalaRequest;
 import com.example.distributedsystems.distributed.systems.model.Response;
+import com.example.distributedsystems.distributed.systems.node.NodeManager;
 import com.example.distributedsystems.distributed.systems.node.NodeRegistry;
 
 import org.slf4j.Logger;
@@ -17,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -43,8 +42,8 @@ public class PaxosController {
   @Autowired
   RestService restService;
 
-//  @Autowired
-//  NodeManager nodeManager;
+  @Autowired
+  NodeManager nodeManager;
 
   @Autowired
   NodeRegistry nodeRegistry;
@@ -67,7 +66,6 @@ public class PaxosController {
     logger.info("Initiating PAXOS Prepare");
     promiseAccepted.set(0); // Reset promiseAccepted to 0
     Set<String> allNodes = nodeRegistry.getActiveNodes();
-//    String pid = System.currentTimeMillis() + serverPort + "";
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     for (String url : allNodes) {
@@ -91,7 +89,7 @@ public class PaxosController {
     // Failed to reach consensus
     if(promiseAccepted.get() <= allNodes.size()/2){
       logger.error("Failed to reach consensus for the proposal: " + paxosTransaction.getProposalId() + " in prepare phase");
-      return new ResponseEntity<>(new Response(false, "Failed to reach consensus for the proposal in prepare phase"), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(new Response(false, "Failed to reach consensus for the proposal in prepare phase"), HttpStatus.INTERNAL_SERVER_ERROR);
     } else {
       //Call accept phase
       return acceptPhase(paxosTransaction);
@@ -121,7 +119,7 @@ public class PaxosController {
     // Failed to reach consensus
     if(nodesAccepted.get() <= allNodes.size()/2){
       logger.error("Failed to reach consensus to accept transaction: " + paxosTransaction.getTransactionId());
-      return new ResponseEntity<>(new Response(false, "Failed to reach consensus to accept transaction in accept phase"), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(new Response(false, "Failed to reach consensus to accept transaction in accept phase"), HttpStatus.INTERNAL_SERVER_ERROR);
     } else {
       // Call learn phase
       return learnPhase(paxosTransaction);
@@ -131,14 +129,13 @@ public class PaxosController {
   private ResponseEntity<Response> learnPhase(PaxosTransaction paxosTransaction) {
     logger.info("Initiating PAXOS Learn");
     Set<String> allNodes = nodeRegistry.getActiveNodes();
-
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     // consensus achieved all nodes accepted, now we go to learn phase
     for (String url: allNodes) {
       executor.execute(() -> {
         // learning phase
-        Boolean ans = (Boolean) restService.post(url + "/paxos/learn", paxosTransaction).getBody();
+        boolean isSuccess = (Boolean) restService.post(url + "/paxos/learn", paxosTransaction).getBody();
       });
     }
 
@@ -154,10 +151,8 @@ public class PaxosController {
 
   private void requestLocksFromAllInstances(PaxosScenario operation) {
     logger.info("Initiating Ricart Agrawala request lock");
-    try {
       Set<String> nodeAddresses = nodeRegistry.getActiveNodes();
-      InetAddress address = InetAddress.getLocalHost();
-      String currentNodeAddress = "http://" + address.getHostAddress() + ":" + serverPort;
+      String currentNodeAddress = nodeManager.getNodeAddress();
       nodeAddresses.remove(currentNodeAddress); // Remove the current node's address from the list
 
       while (true) {
@@ -168,7 +163,7 @@ public class PaxosController {
         RicartAgrawalaRequest request = new RicartAgrawalaRequest(vectorTimestamp, requestCountForOperation, operation.toString());
 
         List<RicartAgrawalaReply> replies = nodeAddresses.stream()
-                .map(nodeAddress -> nodeAddress + "/ricartAgrawala/request/" + operation.toString())
+                .map(nodeAddress -> nodeAddress + "/ricartAgrawala/request/" + operation)
                 .map(url -> restService.post(url, request, RicartAgrawalaReply.class))
                 .collect(Collectors.toList());
 
@@ -188,17 +183,12 @@ public class PaxosController {
           e.printStackTrace();
         }
       }
-    } catch (UnknownHostException e) {
-      logger.error("Exception: " + e);
-    }
   }
 
   private void releaseLocksFromAllInstances(PaxosScenario operation) {
     logger.info("Initiating Ricart Agrawala Release lock phase");
-    try {
       Set<String> nodeAddresses = nodeRegistry.getActiveNodes();
-      InetAddress address = InetAddress.getLocalHost();
-      String currentNodeAddress = "http://" + address.getHostAddress() + ":" + serverPort;
+      String currentNodeAddress =  nodeManager.getNodeAddress();
       nodeAddresses.remove(currentNodeAddress); // Remove the current node's address from the list
       vectorTimestampService.incrementVectorTimestamp(operation.toString(), currentNodeAddress);
       ConcurrentHashMap<String, AtomicInteger> vectorTimestamp = vectorTimestampService.getCurrentVectorTimestamp(operation.toString());
@@ -206,16 +196,13 @@ public class PaxosController {
       RicartAgrawalaRelease release = new RicartAgrawalaRelease(operation.toString(), vectorTimestamp);
 
       nodeAddresses.stream()
-              .map(nodeAddress -> nodeAddress + "/ricartAgrawala/release/" + operation.toString())
+              .map(nodeAddress -> nodeAddress + "/ricartAgrawala/release/" + operation)
               .map(url -> restService.post(url, release, RicartAgrawalaReply.class))
               .forEach(reply -> vectorTimestampService.updateVectorTimestamps(operation.toString(), reply.getVectorTimestamp()));
-    } catch (UnknownHostException e) {
-      logger.error("Exception: " + e);
-    }
   }
 
   public ResponseEntity<Response> propose(@RequestBody PaxosTransaction paxosTransaction) {
-    ResponseEntity<Response> ans;
+    ResponseEntity<Response> responseStatus;
     try {
       paxosTransaction.setProposalId(System.currentTimeMillis() + serverPort);
       logger.info("Proposing transaction with proposal id: " + paxosTransaction.getProposalId());
@@ -224,8 +211,8 @@ public class PaxosController {
       requestLocksFromAllInstances(paxosTransaction.getScenario());
 
       // Paxos Algorithm
-      ans = preparePhase(paxosTransaction);
-      System.out.println("the ans i got is: " + ans + ", " + ans.getBody());
+      responseStatus = preparePhase(paxosTransaction);
+      System.out.println("the ans i got is: " + responseStatus + ", " + responseStatus.getBody());
 
       // Ricart-Agrawala Algorithm - Release phase
       releaseLocksFromAllInstances(paxosTransaction.getScenario());
@@ -234,6 +221,6 @@ public class PaxosController {
       throw new RuntimeException(e);
     }
 
-    return ans;
+    return responseStatus;
   }
 }

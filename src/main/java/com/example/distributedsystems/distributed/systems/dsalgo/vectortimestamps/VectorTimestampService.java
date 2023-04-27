@@ -32,7 +32,7 @@ public class VectorTimestampService {
             .collect(Collectors.toList());
     for (String operation : operations) {
       if (!operationVectorTimestamps.containsKey(operation)) {
-        operationVectorTimestamps.put(operation, new ConcurrentHashMap<String, AtomicInteger>());
+        operationVectorTimestamps.put(operation, new ConcurrentHashMap<>());
       }
     }
   }

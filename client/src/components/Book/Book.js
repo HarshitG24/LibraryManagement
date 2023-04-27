@@ -3,8 +3,9 @@ import { useParams } from "react-router";
 import { getBookByIsbnThunk } from "../../services/books-thunks";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
-import { cartAddBookThunk } from "../../services/cart-thunks";
+import {cartAddBookThunk, cartDeleteBookThunk} from "../../services/cart-thunks";
 import { Tag } from "antd";
+import {clearCartReducer} from "../../reducers/cart-reducers";
 
 // import fs from "fs";
 
@@ -13,37 +14,80 @@ const Book = () => {
   const dispatch = useDispatch();
   const { isbn } = useParams();
 
-  let { currentBook } = useSelector((state) => state.booksData);
+  const { currentBook } = useSelector((state) => state.booksData);
   const [book, setBook] = useState({ ...currentBook });
-
+  const { cart, error } = useSelector((state) => state.cartData);
+  const [bookAdded, setBookAdded] = useState(false);
+  const [bookRemoved, setBookRemoved] = useState(false);
   const { profile, type } = useSelector((state) => state.user);
   const isLoggedIn = () => profile && Object.keys(profile).length > 0;
 
   useEffect(() => {
     dispatch(getBookByIsbnThunk({ isbn }));
-    // fetch("../../../../log.txt")
-    //   .then((response) => {
-    //     console.log("resp is: ", response, response.text());
-    //   })
-    //   .then((data) => console.log("server data is: ", data))
-    //   .catch((error) => console.error("err server data is: ", error));
-    // const filePath = "../../../../log.txt";
-    // fs.readFile(filePath, "utf8", (err, data) => {
-    //   if (err) {
-    //     console.error("Error reading file:", err);
-    //     return;
-    //   }
-    //   console.log("File content:", data);
-    // });
   }, []);
 
   useEffect(() => {
     setBook({ ...currentBook });
   }, [currentBook]);
 
-  console.log(book);
+  useEffect(() => {
+    if (bookAdded) {
+      if (!error) {
+        debugger
+        toast.success("Book successfully added to Shopping cart!", {
+          position: "bottom-right",
+          autoClose: 500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+        });
+        setBookAdded(false)
+      } else {
+        toast.error("Could not add book to Shopping cart. Try again!", {
+          position: "bottom-right",
+          autoClose: 500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+        });
+        setBookAdded(false)
+      }
+    } else if (bookRemoved) {
+      debugger
+      if (!error) {
+        toast.success("Book successfully removed from Shopping cart!", {
+          position: "bottom-right",
+          autoClose: 500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+        });
+        setBookRemoved(false)
+      } else {
+        toast.error("Could not remove book to Shopping cart. Try again!", {
+          position: "bottom-right",
+          autoClose: 500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+        });
+        setBookRemoved(false)
+      }
+    }
+  }, [bookRemoved, bookAdded]);
 
-  debugger;
   const handleAddToCart = () => {
     dispatch(
       cartAddBookThunk({
@@ -51,17 +95,19 @@ const Book = () => {
         isbn: book.isbn,
       })
     );
-    toast.success("Book successfully added to Shopping cart!", {
-      position: "bottom-right",
-      autoClose: 1000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: false,
-      progress: undefined,
-      theme: "colored",
-    });
+    setBookAdded(true)
   };
+
+  const handleRemoveFromCart = () => {
+    dispatch(
+        cartDeleteBookThunk({
+                           username: profile.username,
+                           isbn: book.isbn,
+                         })
+    );
+    setBookRemoved(true)
+  };
+debugger
 
   return (
     <div className="container">
@@ -121,13 +167,21 @@ const Book = () => {
           </div>
           {/* Add to Cart */}
           <div className="mb-3">
-            <button
-              className="btn btn-outline-success"
+            {
+              (cart && cart.books && cart.books.includes(book.isbn)) ? <button
+              className="btn btn-outline-danger"
               style={{ display: "inline" }}
-              disabled={!isLoggedIn() || book.inventory < 1}
-              onClick={handleAddToCart}>
-              Add to Cart (Loan)
-            </button>
+              disabled={!isLoggedIn()}
+              onClick={handleRemoveFromCart}>
+              Remove from Cart
+            </button> :
+             <button
+                 className="btn btn-outline-success"
+                 style={{ display: "inline" }}
+                 disabled={!isLoggedIn() || book.inventory < 1}
+                 onClick={handleAddToCart}>
+               Add to Cart (Loan)
+             </button>}
             {!isLoggedIn() && (
               <div>
                 <i style={{ color: "red" }}>Login to loan book</i>

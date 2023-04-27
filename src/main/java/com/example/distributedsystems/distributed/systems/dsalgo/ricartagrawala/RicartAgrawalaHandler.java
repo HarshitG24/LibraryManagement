@@ -1,15 +1,13 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.ricartagrawala;
 
-import com.example.distributedsystems.distributed.systems.dsalgo.vectortimestamps.VectorTimestampService;
 import com.example.distributedsystems.distributed.systems.dsalgo.paxos.PaxosScenario;
+import com.example.distributedsystems.distributed.systems.dsalgo.vectortimestamps.VectorTimestampService;
 import com.example.distributedsystems.distributed.systems.node.NodeRegistry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,14 +22,11 @@ import java.util.stream.Stream;
 public class RicartAgrawalaHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(RicartAgrawalaHandler.class);
-
-  NodeRegistry nodeRegistry;
-
   private final VectorTimestampService vectorTimestampService;
-
   private final ConcurrentHashMap<String, AtomicBoolean> operationLocks;
   private final ConcurrentHashMap<String, AtomicInteger> operationRequestCounts;
   private final ConcurrentHashMap<String, Queue<RicartAgrawalaRequest>> operationWaitingQueues;
+  NodeRegistry nodeRegistry;
   private Map<String, ConcurrentHashMap<String, AtomicInteger>> operationVectorTimestamps;
 
   public RicartAgrawalaHandler(NodeRegistry nodeRegistry, VectorTimestampService vectorTimestampService) {
@@ -53,75 +48,62 @@ public class RicartAgrawalaHandler {
     }
   }
 
-  public RicartAgrawalaReply request(String operation, RicartAgrawalaRequest request, int serverPort) {
-    try {
-      AtomicBoolean lock = operationLocks.get(operation);
-      AtomicInteger requestCount = operationRequestCounts.get(operation);
-      Queue<RicartAgrawalaRequest> waitingQueue = operationWaitingQueues.get(operation);
-      InetAddress address = InetAddress.getLocalHost();
-      String currentNodeAddress = "http://" + address.getHostAddress() + ":" + serverPort;
+  public RicartAgrawalaReply request(String operation, RicartAgrawalaRequest request, String nodeAddress) {
+    AtomicBoolean lock = operationLocks.get(operation);
+    AtomicInteger requestCount = operationRequestCounts.get(operation);
+    Queue<RicartAgrawalaRequest> waitingQueue = operationWaitingQueues.get(operation);
 
-      synchronized (lock) {
-        // Increment the current instance's timestamp
-        vectorTimestampService.incrementVectorTimestamp(operation, currentNodeAddress);
-        // If the lock is not acquired, grant access immediately
-        if (!lock.get()) {
+    synchronized (lock) {
+      // Increment the current instance's timestamp
+      vectorTimestampService.incrementVectorTimestamp(operation, nodeAddress);
+      // If the lock is not acquired, grant access immediately
+      if (!lock.get()) {
+        requestCount.set(request.getRequestCount());
+        vectorTimestampService.updateVectorTimestamps(operation, request.getVectorTimestamp());
+        return new RicartAgrawalaReply(true, operationVectorTimestamps.get(operation));
+      } else {
+        // Check whether the incoming request has a higher priority than the current lock holder based on vector timestamp
+        boolean hasHigherPriority = compareVectorTimestamps(request.getVectorTimestamp(), operationVectorTimestamps.get(operation));
+
+        // If the incoming request has higher priority, grant access and update the request count and timestamp.
+        if (hasHigherPriority) {
           requestCount.set(request.getRequestCount());
           vectorTimestampService.updateVectorTimestamps(operation, request.getVectorTimestamp());
           return new RicartAgrawalaReply(true, operationVectorTimestamps.get(operation));
         } else {
-          // Check whether the incoming request has a higher priority than the current lock holder based on vector timestamp
-          boolean hasHigherPriority = compareVectorTimestamps(request.getVectorTimestamp(), operationVectorTimestamps.get(operation));
-
-          // If the incoming request has higher priority, grant access and update the request count and timestamp.
-          if (hasHigherPriority) {
-            requestCount.set(request.getRequestCount());
-            vectorTimestampService.updateVectorTimestamps(operation, request.getVectorTimestamp());
-            return new RicartAgrawalaReply(true, operationVectorTimestamps.get(operation));
-          } else {
-            // Add the incoming request in the waiting queue
-            waitingQueue.add(request);
-            return new RicartAgrawalaReply(false, operationVectorTimestamps.get(operation));
-          }
+          // Add the incoming request in the waiting queue
+          waitingQueue.add(request);
+          return new RicartAgrawalaReply(false, operationVectorTimestamps.get(operation));
         }
       }
-    } catch (UnknownHostException e) {
-      logger.error("Exception: " + e);
-      return new RicartAgrawalaReply(false, operationVectorTimestamps.get(operation));
     }
   }
 
-  public RicartAgrawalaReply release(String operation, RicartAgrawalaRelease release, int serverPort) {
+  public RicartAgrawalaReply release(String operation, RicartAgrawalaRelease release, String nodeAddress) {
     RicartAgrawalaReply reply = null;
-    try {
-      AtomicBoolean lock = operationLocks.get(operation);
-      Queue<RicartAgrawalaRequest> waitingQueue = operationWaitingQueues.get(operation);
-      InetAddress address = InetAddress.getLocalHost();
-      String currentNodeAddress = "http://" + address.getHostAddress() + ":" + serverPort;
+    AtomicBoolean lock = operationLocks.get(operation);
+    Queue<RicartAgrawalaRequest> waitingQueue = operationWaitingQueues.get(operation);
 
-      synchronized (lock) {
-        // Increment the current instance's timestamp
-        vectorTimestampService.incrementVectorTimestamp(operation, currentNodeAddress);
+    synchronized (lock) {
+      // Increment the current instance's timestamp
+      vectorTimestampService.incrementVectorTimestamp(operation, nodeAddress);
 
-        lock.set(false);
+      lock.set(false);
 
-        // Update the vector timestamp
-        vectorTimestampService.updateVectorTimestamps(operation, release.getVectorTimestamp());
+      // Update the vector timestamp
+      vectorTimestampService.updateVectorTimestamps(operation, release.getVectorTimestamp());
 
-        // If there is any waiting request in the queue, grant access to the next waiting request.
-        if (!waitingQueue.isEmpty()) {
-          RicartAgrawalaRequest nextRequest = waitingQueue.poll();
-          if (compareVectorTimestamps(nextRequest.getVectorTimestamp(), operationVectorTimestamps.get(operation))) {
-            lock.set(true);
-            vectorTimestampService.updateVectorTimestamps(operation, nextRequest.getVectorTimestamp());
-            reply = new RicartAgrawalaReply(true, operationVectorTimestamps.get(operation));
-          }
+      // If there is any waiting request in the queue, grant access to the next waiting request.
+      if (!waitingQueue.isEmpty()) {
+        RicartAgrawalaRequest nextRequest = waitingQueue.poll();
+        if (compareVectorTimestamps(nextRequest.getVectorTimestamp(), operationVectorTimestamps.get(operation))) {
+          lock.set(true);
+          vectorTimestampService.updateVectorTimestamps(operation, nextRequest.getVectorTimestamp());
+          reply = new RicartAgrawalaReply(true, operationVectorTimestamps.get(operation));
         }
-
-        lock.notifyAll();
       }
-    } catch (UnknownHostException e) {
-      logger.error("Exception: " + e);
+
+      lock.notifyAll();
     }
     if (reply == null) {
       reply = new RicartAgrawalaReply(false, operationVectorTimestamps.get(operation));

@@ -53,22 +53,15 @@ public class TransactionController extends PaxosController {
     logger.info("Create transaction request received. " + transactionRequest);
     // Used Paxos for consensus
     PaxosTransaction paxosTransaction = new PaxosTransaction(transactionRequest.getTransactionId(), transactionRequest.getUsername(), transactionRequest.getBookIsbns(), PaxosScenario.CHECKOUT);
-//    try {
-//      propose(paxosTransaction);
-//    } catch (Exception e) {
-//      logger.error("Exception: " + e.getMessage());
-//      return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-//    }
-//    return new ResponseEntity<>(HttpStatus.OK);
-    ResponseEntity<Response> ans;
+    ResponseEntity<Response> createTransactionResponse;
     try {
-      ans = propose(paxosTransaction);
+      createTransactionResponse = propose(paxosTransaction);
     } catch (Exception e) {
       logger.error("Exception: " + e.getMessage());
       return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
     }
 
-    return ans;
+    return createTransactionResponse;
   }
 
 
@@ -79,26 +72,21 @@ public class TransactionController extends PaxosController {
     list.add(bookIsbn);
     PaxosTransaction pt = new PaxosTransaction(transactionId, list, PaxosScenario.RETURN);
     // Used Paxos for consensus
-//    try {
-//      propose(pt);
-//    } catch (Exception e) {
-//      logger.error("Exception: " + e.getMessage());
-//      return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-//    }
-//    return new ResponseEntity<>(HttpStatus.OK);
-    ResponseEntity<Response> ans;
+    ResponseEntity<Response> markBookReturnedResponse;
     try {
-      ans = propose(pt);
-      Response old = ans.getBody();
-      Response obj = new Response( old.isAns(),old.getMsg(), bookIsbn, transactionId);
-
-      ans = new ResponseEntity<>(obj, HttpStatus.OK);
+      markBookReturnedResponse = propose(pt);
+      Response responseStatus = markBookReturnedResponse.getBody();
+      assert responseStatus != null;
+      if (responseStatus.isSuccess()) {
+        Response responseObject = new Response(responseStatus.isSuccess(), responseStatus.getMessage(), bookIsbn, transactionId);
+        markBookReturnedResponse = new ResponseEntity<>(responseObject, HttpStatus.OK);
+      }
     } catch (Exception e) {
       logger.error("Exception: " + e.getMessage());
       return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
     }
 
-    return ans;
+    return markBookReturnedResponse;
   }
 
   @GetMapping("/unreturned/{username}")

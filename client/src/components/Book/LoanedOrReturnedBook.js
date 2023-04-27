@@ -5,12 +5,15 @@ import { toast, ToastContainer } from "react-toastify";
 import { getBookByIsbnThunk } from "../../services/books-thunks.js";
 import { useDispatch, useSelector } from "react-redux";
 import { cartAddBookThunk } from "../../services/cart-thunks";
+import { Link } from "react-router-dom";
 
 const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
   const dispatch = useDispatch();
   const { profile } = useSelector((state) => state.user);
+  const { error } = useSelector((state) => state.cartData);
   const [book, setBook] = useState(null);
   const [reload, setReload] = useState(false);
+  const [bookAdded, setBookAdded] = useState(false);
 
   useEffect(() => {
     dispatch(getBookByIsbnThunk({ isbn }))
@@ -28,7 +31,7 @@ const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
       .then(() => {
         toast.success(`Book ${isbn} returned successfully!`, {
           position: "top-right",
-          autoClose: 1000,
+          autoClose: 500,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: false,
@@ -42,8 +45,37 @@ const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
         console.error(error);
       });
     setReload(!reload); // Toggle the reload state
-    window.location.reload();
+    // window.location.reload();
   };
+
+  useEffect(() => {
+    if (bookAdded) {
+      if (!error) {
+        toast.success(`Book ${book.isbn} successfully added to Shopping cart!`, {
+          position: "bottom-right",
+          autoClose: 500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+        });
+      } else {
+        toast.error("Could not add book to Shopping cart. Try again!", {
+          position: "bottom-right",
+          autoClose: 500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+        });
+        setBookAdded(false)
+      }
+    }
+  }, [bookAdded]);
 
   const handleAddToCart = () => {
     dispatch(
@@ -52,16 +84,7 @@ const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
         isbn: book.isbn,
       })
     );
-    toast.success(`Book ${isbn} successfully added to Shopping cart!`, {
-      position: "bottom-right",
-      autoClose: 1000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: false,
-      progress: undefined,
-      theme: "colored",
-    });
+    setBookAdded(true);
   };
 
   return (
@@ -77,11 +100,14 @@ const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
             />
           </div>
           <div className="col-9">
-            <h6
+            <Link
+                to={`/books/${book.isbn}`}
+                style={{textDecoration: "none"}}
+            ><h6
               className="card-title mt-2"
               style={{ maxHeight: "80px", overflow: "hidden" }}>
               {book.name}
-            </h6>
+            </h6></Link>
             <p
               className="card-text"
               style={{ maxHeight: "70px", overflow: "hidden" }}>

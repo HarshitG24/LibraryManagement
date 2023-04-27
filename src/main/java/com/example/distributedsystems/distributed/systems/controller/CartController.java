@@ -87,17 +87,21 @@ public class CartController extends PaxosController {
         List<Long> list = new ArrayList<>();
         list.add(content.getIsbn());
         // Used Paxos for consensus
-        PaxosTransaction pt = new PaxosTransaction(content.getUsername(), list, PaxosScenario.LOAN);
-        ResponseEntity<Response> ans;
+        PaxosTransaction paxosTransaction = new PaxosTransaction(content.getUsername(), list, PaxosScenario.LOAN);
+        ResponseEntity<Response> addBookResponse;
         try {
-            ans = propose(pt);
+            addBookResponse = propose(paxosTransaction);
+            Response responseStatus = addBookResponse.getBody();
+            assert responseStatus != null;
+            if (responseStatus.isSuccess()) {
+                Response responseObject = new Response(responseStatus.isSuccess(), responseStatus.getMessage(), content.getIsbn(), null);
+                addBookResponse = new ResponseEntity<>(responseObject, HttpStatus.OK);
+            }
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-
-        return ans;
-//        return new ResponseEntity<>(content.getIsbn(), HttpStatus.OK);
+        return addBookResponse;
     }
 
     @DeleteMapping("/{username}/book/{isbn}")
@@ -105,48 +109,36 @@ public class CartController extends PaxosController {
         logger.info("Delete book from cart request received for User: " + username + ", ISBN: " + isbn);
         List<Long> list = new ArrayList<>();
         list.add(isbn);
-        PaxosTransaction pt = new PaxosTransaction(username, list, PaxosScenario.DELETE_BOOK);
+        PaxosTransaction paxosTransaction = new PaxosTransaction(username, list, PaxosScenario.DELETE_BOOK);
         // Used Paxos for consensus
-//        propose(pt);
-//        try {
-//            propose(pt);
-//        } catch (Exception e) {
-//            logger.error("Exception: " + e.getMessage());
-//            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-//        }
-//        return new ResponseEntity<>(isbn, HttpStatus.OK);
-        ResponseEntity<Response> ans;
+        ResponseEntity<Response> deleteBookResponse;
         try {
-            ans = propose(pt);
+            deleteBookResponse = propose(paxosTransaction);
+            Response responseStatus = deleteBookResponse.getBody();
+            assert responseStatus != null;
+            if (responseStatus.isSuccess()) {
+                Response responseObject = new Response(responseStatus.isSuccess(), responseStatus.getMessage(), isbn, null);
+                deleteBookResponse = new ResponseEntity<>(responseObject, HttpStatus.OK);
+            }
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-
-        return ans;
+        return deleteBookResponse;
     }
 
     @DeleteMapping("/{username}")
     public ResponseEntity<Response> deleteCartByUsername(@PathVariable String username) {
         logger.info("Delete cart request received for User: " + username);
         // Used Paxos for consensus
-        PaxosTransaction pt = new PaxosTransaction(username, PaxosScenario.DELETE_CART);
-//        propose(pt);
-//        try {
-//            propose(pt);
-//        } catch (Exception e) {
-//            logger.error("Exception: " + e.getMessage());
-//            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-//        }
-//        return new ResponseEntity<>(HttpStatus.OK);
-        ResponseEntity<Response> ans;
+        PaxosTransaction paxosTransaction = new PaxosTransaction(username, PaxosScenario.DELETE_CART);
+        ResponseEntity<Response> deleteCartResponse;
         try {
-            ans = propose(pt);
+            deleteCartResponse = propose(paxosTransaction);
         } catch (Exception e) {
             logger.error("Exception: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
         }
-
-        return ans;
+        return deleteCartResponse;
     }
 }

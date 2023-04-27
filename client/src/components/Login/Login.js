@@ -35,7 +35,7 @@ const Login = () => {
         } else if (currentUser) {
             toast.success("Login successful!", {
                 position: "bottom-right",
-                autoClose: 1000,
+                autoClose: 500,
                 hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: false,
@@ -59,7 +59,7 @@ const Login = () => {
         console.log('Login Attempt Failed:', errorInfo)
         toast.error("Error in username/password!", {
             position: "bottom-right",
-            autoClose: 1000,
+            autoClose: 500,
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: false,

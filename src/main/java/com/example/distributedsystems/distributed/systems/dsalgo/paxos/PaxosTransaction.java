@@ -8,7 +8,7 @@ public class PaxosTransaction {
 
     @Id
     private Long transactionId;
-    private String userId;
+    private String username;
 
     private List<Long> allBooks;
 
@@ -18,9 +18,9 @@ public class PaxosTransaction {
 
     public PaxosTransaction(){}
 
-    public PaxosTransaction(Long transactionId, String userId, List<Long> allBooks, PaxosScenario scenario) {
+    public PaxosTransaction(Long transactionId, String username, List<Long> allBooks, PaxosScenario scenario) {
         this.transactionId = transactionId;
-        this.userId = userId;
+        this.username = username;
         this.allBooks = allBooks;
         this.scenario = scenario;
     }
@@ -31,14 +31,14 @@ public class PaxosTransaction {
         this.scenario = scenario;
     }
 
-    public PaxosTransaction(String userId, List<Long> allBooks, PaxosScenario scenario) {
-        this.userId = userId;
+    public PaxosTransaction(String username, List<Long> allBooks, PaxosScenario scenario) {
+        this.username = username;
         this.allBooks = allBooks;
         this.scenario = scenario;
     }
 
-    public PaxosTransaction(String userId, PaxosScenario scenario) {
-        this.userId = userId;
+    public PaxosTransaction(String username, PaxosScenario scenario) {
+        this.username = username;
         this.scenario = scenario;
     }
 
@@ -50,12 +50,12 @@ public class PaxosTransaction {
         this.transactionId = transactionId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public List<Long> getAllBooks() {
@@ -86,7 +86,7 @@ public class PaxosTransaction {
     public String toString() {
         return "PaxosTransaction{" +
                 "transactionId=" + transactionId +
-                ", userId='" + userId + '\'' +
+                ", username='" + username + '\'' +
                 ", allBooks=" + allBooks +
                 ", scenario=" + scenario +
                 ", proposalId=" + proposalId +

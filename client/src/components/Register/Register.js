@@ -51,7 +51,7 @@ const Register = () => {
         console.log('Register Attempt Failed:', errorInfo)
         toast.error("Error in details entered!", {
             position: "bottom-right",
-            autoClose: 1000,
+            autoClose: 500,
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: false,

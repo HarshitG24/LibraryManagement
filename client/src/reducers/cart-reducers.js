@@ -15,7 +15,12 @@ const shoppingCartSlice = createSlice(
     {
         name: 'cart',
         initialState,
-        reducers: {},
+        reducers: {
+            clearCartReducer: (state) => {
+                state.cart = {};
+                state.error = null;
+            },
+        },
         extraReducers: {
             [cartFindThunk.pending]:
                 (state) => {
@@ -44,25 +49,31 @@ const shoppingCartSlice = createSlice(
             [cartAddBookThunk.fulfilled]:
                 (state, { payload }) => {
                     state.error = null
-                    state.cart = {}
+                    if (state.cart.books === undefined || state.cart.books.length === 0) {
+                        state.cart.books = []
+                        state.cart.books.push(payload.isbn)
+                    } else {
+                        state.cart.books.push(payload.isbn)
+                    }
                 },
             [cartAddBookThunk.rejected]:
                 (state, action) => {
-                    state.error = action.error
+                    state.error = action.payload?.message || action.payload === '' || action.error
                 },
             [cartDeleteBookThunk.fulfilled]:
                 (state, { payload }) => {
                     state.error = null
-                    const index = state.cart.books.indexOf(payload);
+                    const index = state.cart.books.indexOf(payload.isbn);
                     if (index > -1) {
                         state.cart.books.splice(index, 1);
                     }
                 },
             [cartDeleteBookThunk.rejected]:
                 (state, action) => {
-                    state.error = action.error
+                    state.error = action.payload?.message || action.payload === '' || action.error
                 }
         }
     });
 
+export const { clearCartReducer } = shoppingCartSlice.actions;
 export default shoppingCartSlice.reducer;

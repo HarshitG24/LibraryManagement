@@ -9,9 +9,11 @@ import {
 import { getAllBooksThunk } from "../../services/books-thunks.js";
 import { createTransactionThunk } from "../../services/transaction-thunks.js";
 import CartItem from "./CartItem";
+import {clearCartReducer} from "../../reducers/cart-reducers";
 
 const Cart = () => {
   const dispatch = useDispatch();
+
 
   const { profile } = useSelector((state) => state.user);
   const { cart } = useSelector((state) => state.cartData);
@@ -23,10 +25,10 @@ const Cart = () => {
   useEffect(() => {
     if (orderPlaced) {
       if (!error) {
-      dispatch(cartDeleteThunk(profile.username));
+          dispatch(clearCartReducer())
       toast.success("Loan request placed! :)", {
         position: "top-right",
-        autoClose: 1000,
+        autoClose: 500,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
@@ -37,7 +39,7 @@ const Cart = () => {
       } else {
           toast.error('Loan request could not be placed!', {
               position: "top-right",
-              autoClose: 1000,
+              autoClose: 500,
               hideProgressBar: false,
               closeOnClick: true,
               pauseOnHover: false,
