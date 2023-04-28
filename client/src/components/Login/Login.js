@@ -24,7 +24,7 @@ const Login = () => {
         if (error && !currentUser) {
             toast.error(`Login failed! User not found!`, {
                 position: "bottom-right",
-                autoClose: 2000,
+                autoClose: 500,
                 hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: false,
@@ -35,7 +35,7 @@ const Login = () => {
         } else if (currentUser) {
             toast.success("Login successful!", {
                 position: "bottom-right",
-                autoClose: 500,
+                autoClose: 200,
                 hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: false,
@@ -59,7 +59,7 @@ const Login = () => {
         console.log('Login Attempt Failed:', errorInfo)
         toast.error("Error in username/password!", {
             position: "bottom-right",
-            autoClose: 500,
+            autoClose: 200,
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: false,

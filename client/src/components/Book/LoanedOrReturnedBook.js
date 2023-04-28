@@ -29,7 +29,7 @@ const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
       .then(() => {
         toast.success(`Book ${isbn} returned successfully!`, {
           position: "top-right",
-          autoClose: 500,
+          autoClose: 200,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: false,
@@ -56,7 +56,7 @@ const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
       if (response.payload.success) {
         toast.success("Book successfully added to Shopping cart!", {
           position: "bottom-right",
-          autoClose: 500,
+          autoClose: 200,
           hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: false,
@@ -67,7 +67,7 @@ const LoanedOrReturnedBook = ({ isbn, transaction, type }) => {
       } else {
         toast.error("Could not add book to Shopping cart. Try again!", {
           position: "bottom-right",
-          autoClose: 500,
+          autoClose: 200,
           hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: false,

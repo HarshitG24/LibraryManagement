@@ -35,7 +35,7 @@ const Register = () => {
                 if (response.payload.didPromise) {
                     toast.success('Registered successfully! :)', {
                         position: "top-right",
-                        autoClose: 5000,
+                        autoClose: 200,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -47,7 +47,7 @@ const Register = () => {
                 } else {
                     toast.error(response.payload.message, {
                         position: "top-right",
-                        autoClose: 5000,
+                        autoClose: 500,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -66,7 +66,7 @@ const Register = () => {
         console.log('Register Attempt Failed:', errorInfo)
         toast.error("Error in details entered!", {
             position: "bottom-right",
-            autoClose: 500,
+            autoClose: 200,
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: false,
