@@ -1,8 +1,15 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.twopc;
 
+/**
+ * promise object that is contains the messages from all the phases in twoPC algorithm
+ */
 public class TwoPCPromise {
 
 
+    /**
+     * didPromise: boolean- True if the phase was successful or else fale
+     * message: conatins the message from the execution of each phase
+     */
 
         private final boolean didPromise;
         private final String message;
