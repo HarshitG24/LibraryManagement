@@ -3,7 +3,7 @@ package com.example.distributedsystems.distributed.systems.controller;
 import com.example.distributedsystems.distributed.systems.dsalgo.twopc.TwoPCPromise;
 import com.example.distributedsystems.distributed.systems.model.Server;
 import com.example.distributedsystems.distributed.systems.model.user.User;
-import com.example.distributedsystems.distributed.systems.service.TwoPcRestService;
+import com.example.distributedsystems.distributed.systems.service.TwoPCRestService;
 import com.example.distributedsystems.distributed.systems.service.UserService;
 
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class TwoPCTRestController {
   private static final Logger logger = LoggerFactory.getLogger(TwoPCTRestController.class);
 
   @Autowired
-  private TwoPcRestService twoPCRestService;
+  private TwoPCRestService twoPCRestService;
 
   @Autowired
   private UserService userService;

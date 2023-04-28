@@ -1,7 +1,5 @@
 package com.example.distributedsystems.distributed.systems.service;
 
-package com.example.distributedsystems.distributed.systems.service;
-
 import com.example.distributedsystems.distributed.systems.model.Server;
 
 import com.example.distributedsystems.distributed.systems.repository.TwoPCRestInterface;
@@ -12,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class TwoPcRestService {
+public class TwoPCRestService {
   @Autowired
   private TwoPCRestInterface twoPCRestInterface;
 
