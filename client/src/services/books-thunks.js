@@ -1,6 +1,5 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import textFile from "../../src/log.txt";
 
 const BOOKS_API = `http://localhost:${process.env.REACT_APP_SERVER_PORT}/book`;
 

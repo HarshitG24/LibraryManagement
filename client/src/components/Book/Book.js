@@ -35,7 +35,7 @@ const Book = () => {
             if (response.payload.success) {
                 toast.success("Book successfully added to Shopping cart!", {
                     position: "bottom-right",
-                    autoClose: 500,
+                    autoClose: 200,
                     hideProgressBar: true,
                     closeOnClick: true,
                     pauseOnHover: false,
@@ -46,7 +46,7 @@ const Book = () => {
             } else {
                 toast.error("Could not add book to Shopping cart. Try again!", {
                     position: "bottom-right",
-                    autoClose: 500,
+                    autoClose: 200,
                     hideProgressBar: true,
                     closeOnClick: true,
                     pauseOnHover: false,
@@ -73,7 +73,7 @@ const Book = () => {
 
                 toast.success("Book successfully removed from Shopping cart!", {
                     position: "bottom-right",
-                    autoClose: 500,
+                    autoClose: 200,
                     hideProgressBar: true,
                     closeOnClick: true,
                     pauseOnHover: false,
@@ -84,7 +84,7 @@ const Book = () => {
             } else {
                 toast.error("Could not remove book from Shopping cart. Try again!", {
                     position: "bottom-right",
-                    autoClose: 500,
+                    autoClose: 200,
                     hideProgressBar: true,
                     closeOnClick: true,
                     pauseOnHover: false,

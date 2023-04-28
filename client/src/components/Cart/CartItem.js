@@ -16,7 +16,7 @@ const CartItem = ({ book, user }) => {
             if (!error) {
                 toast.success(`Book ${book.isbn} successfully deleted from Shopping cart!`, {
                     position: "bottom-right",
-                    autoClose: 500,
+                    autoClose: 200,
                     hideProgressBar: true,
                     closeOnClick: true,
                     pauseOnHover: false,
@@ -27,7 +27,7 @@ const CartItem = ({ book, user }) => {
             } else {
                 toast.error("Could not delete book from Shopping cart. Try again!", {
                     position: "bottom-right",
-                    autoClose: 500,
+                    autoClose: 200,
                     hideProgressBar: true,
                     closeOnClick: true,
                     pauseOnHover: false,
@@ -59,8 +59,11 @@ const CartItem = ({ book, user }) => {
                             <Link
                                 to={`/books/${book.isbn}`}
                                 style={{textDecoration: "none"}}
-                            ><div className="wd-light-text fw-bold">{book.name}</div></Link>
-                            <div className="small mt-1 mb-2">{book.description}</div>
+                            ><div className="wd-light-text fw-bold">{book.name} </div></Link>
+                            <div className="small mt-1 mb-2" style={{
+                                maxHeight: "65px",
+                                overflow: "hidden"
+                            }}>{book.description}</div>
 
                             <div className="small">ISBN: {book.isbn}</div>
                             <div className="small mb-2">Author: {book.authorName}</div>

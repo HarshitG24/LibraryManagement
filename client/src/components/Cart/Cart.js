@@ -28,7 +28,7 @@ const Cart = () => {
           dispatch(clearCartReducer())
       toast.success("Loan request placed! :)", {
         position: "top-right",
-        autoClose: 500,
+        autoClose: 200,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
@@ -39,7 +39,7 @@ const Cart = () => {
       } else {
           toast.error('Loan request could not be placed!', {
               position: "top-right",
-              autoClose: 500,
+              autoClose: 200,
               hideProgressBar: false,
               closeOnClick: true,
               pauseOnHover: false,

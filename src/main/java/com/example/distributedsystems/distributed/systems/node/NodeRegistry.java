@@ -39,27 +39,7 @@ public class NodeRegistry {
 
   public Set<String> getActiveNodes() {
     Set<Object> keys = hazelcastInstance.getMap("activeNodes").keySet();
-    try {
-//      File myObj = new File("../../../../../../../../../log.txt");
-//      myObj.createNewFile();
-      FileWriter myWriter = new FileWriter("./client/src/log.txt", false);
-
-      for (Object k : keys) {
-        try {
-          myWriter.write(k.toString() + "\n");
-//          myWriter.close();
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-//        System.out.println(k.toString());
-      }
-
-      myWriter.close();
-
-      return keys.stream().map(Object::toString).collect(Collectors.toSet());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return keys.stream().map(Object::toString).collect(Collectors.toSet());
   }
     public void removeNodeFromActiveNodes(String nodeAddress) {
     hazelcastInstance.getMap("activeNodes").remove(nodeAddress);
