@@ -39,54 +39,122 @@ import java.util.Set;
 import java.util.UUID;
 
 
-
+/**
+ * A service responsible for managing the current node in the distributed system.
+ */
 @Service
 public class NodeManager {
+    /**
+     * The logger object for NodeManager class.
+     */
     private static final Logger logger = LoggerFactory.getLogger(NodeManager.class);
 
+    /**
+     * The server port that this node is running on.
+     */
     @Value("${server.port}")
     private int serverPort;
 
+    /**
+     * The RestTemplate object used to make HTTP requests to other nodes.
+     */
     private final RestTemplate restTemplate = new RestTemplate();
 
+    /**
+     * The repository object for books.
+     */
     private BookInterface bookRepository;
+    /**
+     * The repository object for carts.
+     */
     private CartInterface cartRepository;
+
+    /**
+     * The repository object for cart books.
+     */
     private CartBookInterface cartBookRepository;
+
+    /**
+     * The repository object for transactions.
+     */
     private TransactionInterface transactionRepository;
+
+    /**
+     * The repository object for users.
+     */
     private UserInterface userRepository;
+
+    /**
+     * The IP address of this node.
+     */
     private final String address = InetAddress.getLoopbackAddress().getHostAddress();
 
+    /**
+     * The NodeRegistry object that maintains the list of active nodes in the distributed system.
+     */
     @Autowired
     private NodeRegistry nodeRegistry;
 
+    /**
+     * The VectorTimestampService object that manages vector timestamps in the distributed system.
+     */
     @Autowired
     private VectorTimestampService vectorTimestampService;
 
+    /**
+     * Sets the Book repository.
+     *
+     * @param bookRepository The Book repository to set.
+     */
     @Autowired
     public void setBookRepository(BookInterface bookRepository) {
         this.bookRepository = bookRepository;
     }
 
+    /**
+     * Sets the Cart repository.
+     *
+     * @param cartRepository The Cart repository to set.
+     */
     @Autowired
     public void setCartRepository(CartInterface cartRepository) {
         this.cartRepository = cartRepository;
     }
 
+    /**
+     * Sets the CartBook repository.
+     *
+     * @param cartBookRepository The CartBook repository to set.
+     */
     @Autowired
     public void setCartBookRepository(CartBookInterface cartBookRepository) {
         this.cartBookRepository = cartBookRepository;
     }
 
+    /**
+     * Sets the Transaction repository.
+     *
+     * @param transactionRepository The Transaction repository to set.
+     */
     @Autowired
     public void setTransactionRepository(TransactionInterface transactionRepository) {
         this.transactionRepository = transactionRepository;
     }
 
+    /**
+     * Sets the User repository.
+     *
+     * @param userRepository The User repository to set.
+     */
     @Autowired
     public void setUserRepository(UserInterface userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Starts the node, registers it with the NodeRegistry, synchronizes data from an existing node if available,
+     * and initializes the VectorTimestampService for the new node.
+     */
     public void startNode() {
 
         // Register the node
@@ -106,6 +174,9 @@ public class NodeManager {
         updateVectorTimestampsForAllNodesExceptCurrent();
     }
 
+    /**
+     * Updates vector timestamps for all active nodes to add the current node.
+     */
     private void updateVectorTimestampsForAllNodesExceptCurrent() {
         String currentNodeAddress = getNodeAddress();
         vectorTimestampService.updateVectorTimestampsForCurrentActiveNodes();
@@ -116,6 +187,10 @@ public class NodeManager {
         }
     }
 
+    /**
+     * Initializes data in the node's database if no existing node is present.
+     * Adds users data from a json file and books data from another json file.
+     */
     public void initializeData() {
         //Adding users data
         List<User> existingUsers = (List<User>) userRepository.findAll();
@@ -150,6 +225,10 @@ public class NodeManager {
         }
     }
 
+    /**
+     * Synchronizes the data from any existing node.
+     * @param nodeAddress exiting node address
+     */
     public void synchronizeDataFromNode(String nodeAddress) {
 
         logger.info("Synchronizing data from existing node: " + nodeAddress);
@@ -236,6 +315,11 @@ public class NodeManager {
         logger.info("Data Synchronization complete!");
     }
 
+    /**
+     * Returns an existing node.
+     *
+     * @return existing node address
+     */
     public String getAnExistingNodeAddress() {
         Set<String> activeNodes = nodeRegistry.getActiveNodes();
         String currentNodeAddress = getNodeAddress();
@@ -247,6 +331,10 @@ public class NodeManager {
         return null;
     }
 
+    /**
+     * Returns current node address
+     * @return current node address
+     */
     public String getNodeAddress() {
         return "http://" + address + ":" + serverPort;
     }
