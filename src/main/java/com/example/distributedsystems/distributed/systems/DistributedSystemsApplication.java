@@ -4,6 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+/**
+ * Main entry point of the application
+ */
 @SpringBootApplication
 @EntityScan(basePackages = {"com.example.distributedsystems.distributed.systems.model"})
 public class DistributedSystemsApplication {

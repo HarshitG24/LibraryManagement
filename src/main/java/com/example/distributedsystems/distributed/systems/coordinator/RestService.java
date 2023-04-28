@@ -12,22 +12,27 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 
 /**
- * helper function that is used to send requests to other one port to other
+ * A service that provides methods for making RESTful API calls.
  */
 @Service
 public class RestService {
     private final RestTemplate restTemplate;
 
+    /**
+     * Constructs a new RestService with the given RestTemplateBuilder.
+     *
+     * @param restTemplateBuilder the RestTemplateBuilder used to build the RestTemplate used by this service.
+     */
     public RestService(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
 
     /**
+     * Sends a POST request with the given data to the specified URL, and returns the response entity.
      *
-     * @param url of the port and the api to be called
-     * @param data data to be sent
-     * @return the output of the post
-     * it sends the post request to all the other ports
+     * @param url the URL to send the request to.
+     * @param data the data to include in the request body.
+     * @return the response entity from the server.
      */
     public ResponseEntity<Object> post(String url, Object data) {
         HttpHeaders headers = new HttpHeaders();
@@ -43,6 +48,14 @@ public class RestService {
         return restTemplate.postForEntity(url, entity, Object.class);
     }
 
+    /**
+     * Sends a POST request with the given data to the specified URL, and returns the response entity.
+     *
+     * @param url the URL to send the request to.
+     * @param data the data to include in the request body.
+     * @param responseType the type of the response entity.
+     * @return the response entity from the server.
+     */
     public <T> T post(String url, Object data, Class<T> responseType) {
         HttpHeaders headers = new HttpHeaders();
         // set `content-type` header
@@ -59,13 +72,12 @@ public class RestService {
     }
 
     /**
+     * Sends a GET request with the given data to the specified URL, and returns the response entity.
      *
-     * @param url url of the port
-     * @param data data to be sent
-     * @return the response
-     * sends the get request
+     * @param url the URL to send the request to.
+     * @param data the data to include in the request body.
+     * @return the response entity from the server.
      */
-
     public ResponseEntity<Object> get(String url, Object data) {
         HttpHeaders headers = new HttpHeaders();
         // set `content-type` header

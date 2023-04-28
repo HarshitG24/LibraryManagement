@@ -16,7 +16,7 @@ import java.util.List;
 import jakarta.transaction.Transactional;
 
 /**
- * services for all the transactions
+ * Services for all the transactions
  */
 @Service
 public class TransactionService {
