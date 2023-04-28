@@ -8,6 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * model for storing the user data
+ */
 @Entity
 @Table(name = "users")
 public class User {
@@ -28,6 +31,16 @@ public class User {
   public User() {
   }
 
+  /**
+   *
+   * @param firstName of the user
+   * @param lastName of the user
+   * @param email of the user
+   * @param password of the user
+   * @param username of the user
+   * @param phone of the user
+   * @param address of the user
+   */
   public User(String firstName, String lastName, String email, String password, String username,
               String phone, Address address) {
     this.firstName = firstName;
@@ -38,6 +51,11 @@ public class User {
     this.phone = phone;
     this.address = address;
   }
+
+  /**
+   *
+   * getters and setters
+   */
 
   public String getUsername() {
     return username;

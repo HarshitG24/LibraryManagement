@@ -1,5 +1,8 @@
 package com.example.distributedsystems.distributed.systems.model;
 
+/**
+ * helper object to pass the reponses for the paxos operations
+ */
 public class Response {
     private boolean isSuccess;
     private String message;
@@ -7,11 +10,23 @@ public class Response {
     private Long transactionId;
 
 
+    /**
+     *
+     * @param isSuccess success status of the operation (true/false)
+     * @param message  message after execution of each operation
+     */
     public Response(boolean isSuccess, String message) {
         this.isSuccess = isSuccess;
         this.message = message;
     }
 
+    /**
+     *
+     * @param isSuccess
+     * @param message
+     * @param isbn isbn of the book for which the paxos transaction were done
+     * @param transactionId transaction id  for which the paxos transactions were done
+     */
     public Response(boolean isSuccess, String message, Long isbn, Long transactionId) {
         this.isSuccess = isSuccess;
         this.message = message;
@@ -19,6 +34,10 @@ public class Response {
         this.transactionId = transactionId;
     }
 
+    /**
+     *
+     * getters and setters
+     */
     public void setSuccess(boolean success) {
         this.isSuccess = success;
     }

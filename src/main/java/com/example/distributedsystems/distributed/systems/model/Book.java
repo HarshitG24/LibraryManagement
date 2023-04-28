@@ -5,6 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * model for storing the book data
+ */
 @Entity
 @Table(name = "book")
 public class Book {
@@ -20,6 +23,15 @@ public class Book {
   public Book() {
   }
 
+  /**
+   *
+   * @param isbn of the book (unique id)
+   * @param name of the book
+   * @param description small description about the book
+   * @param  image  image link for the book
+   * @param inventory availability count for the book
+   * @param authorName name of the author
+   */
   public Book(Long isbn, String name, String description, String image, Integer inventory, String authorName) {
     this.isbn = isbn;
     this.name = name;
@@ -29,6 +41,10 @@ public class Book {
     this.authorName = authorName;
 
   }
+
+  /**
+   * getters and setters
+   */
 
   public Long getIsbn() {
     return isbn;

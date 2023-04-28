@@ -2,20 +2,33 @@ package com.example.distributedsystems.distributed.systems.model.transaction;
 
 import java.util.List;
 
-
+/**
+ * response sent to client from the server for transaction
+ */
 public class TransactionResponse {
   private Long transactionId;
   private String username;
   private List<Long> bookIsbns;
   private Long transactionDate;
 
-
+  /**
+   *
+   * @param transactionId id of the transaction
+   * @param transactionDate date of the transaction
+   * @param bookIsbns list of the isbns of the books loaned
+   * @param username username who loaned the books
+   */
   public TransactionResponse(Long transactionId, Long transactionDate, List<Long> bookIsbns, String username) {
     this.transactionId = transactionId;
     this.bookIsbns = bookIsbns;
     this.username = username;
     this.transactionDate = transactionDate;
   }
+
+  /**
+   *
+   * getter and setters
+   */
 
   public Long getTransactionId() {
     return transactionId;
