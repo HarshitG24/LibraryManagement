@@ -9,9 +9,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
+/**
+ * model for the books in the cart
+ */
 @Entity
 @Table(name = "cart_books")
 public class CartBook {
+
 
   @EmbeddedId
   private CartBookId id;

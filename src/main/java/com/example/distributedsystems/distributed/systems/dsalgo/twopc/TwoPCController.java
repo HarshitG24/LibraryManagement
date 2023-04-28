@@ -17,6 +17,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * controller to handle twopc operations
+ */
+
 @Controller
 public class TwoPCController {
     private static final Logger logger = LoggerFactory.getLogger(TwoPCController.class);
@@ -27,10 +31,21 @@ public class TwoPCController {
     @Autowired
     NodeRegistry nodeRegistry;
 
+    /**
+     * keep track of consensus counts from all the nodes
+     */
     int ackCount  = 0;
 
+    /**
+     *
+     * @param emp user object that contains all the user details
+     * @return ResponseEntity with appropriate message
+     */
     public  ResponseEntity<TwoPCPromise> performTransaction(User emp) {
         System.out.println("entered user is: " + emp);
+        /**
+         * get all the list of all the active nodes
+         */
         try{
 
             Set<String> ports = nodeRegistry.getActiveNodes();
@@ -38,11 +53,15 @@ public class TwoPCController {
                 System.out.println("port address is:"+a);
             }
 
+            /**
+             * sends the proposal request to all the servers and get their consensus
+             */
             ExecutorService executor = Executors.newFixedThreadPool(10);
             // Acknowledgement phase
             for(String a:ports){
                 executor.execute(() -> {
                     boolean acks = (boolean) restService.get(a+"/server/cancommit", null).getBody();
+                    //updates the ackCount if the servers replies with true
                     if(acks){
                         ackCount++;
                     }
@@ -56,6 +75,7 @@ public class TwoPCController {
                 logger.error(e.getMessage());
                 return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
+            //if consensus was not reached then abort the operation
             if(ackCount != ports.size()){
                 logger.error("TwoPC Failed to reach consensus for the proposal");
                 return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -63,6 +83,9 @@ public class TwoPCController {
             logger.info("TwoPC consensus reached");
 
             ackCount = 0;
+            /**
+             * start the commit phase where the user is added to the database
+             */
 
             AtomicReference<String> failed_msg = new AtomicReference<>();
             // commit phase as consensus achieved
@@ -70,9 +93,11 @@ public class TwoPCController {
             for(String a:ports){
                 executor.execute(() -> {
                     LinkedHashMap<String, Object> promise =  (LinkedHashMap<String, Object>) restService.post(a+"/server/docommit", emp).getBody();
+                    // check if the operation was performed
                     if((Boolean) promise.get("didPromise")){
                         ackCount++;
                     }
+                    // if failed to perform the operation then store the failure message
                     else {
                         System.out.println("failure message is : " +promise.get("message"));
                         failed_msg.set((String) promise.get("message"));
@@ -93,7 +118,9 @@ public class TwoPCController {
                 logger.error(e.getMessage());
                 return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
-
+            /**
+             * if commit is not successful in all the nodes then rollback to the previous state
+             */
             if(ackCount != ports.size()){
                 logger.error(String.valueOf(failed_msg));
                 return new ResponseEntity<>(new TwoPCPromise(false,String.valueOf(failed_msg)), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -102,6 +129,7 @@ public class TwoPCController {
         } catch (Exception e) {
             return new ResponseEntity<>(new TwoPCPromise(false, "Registration Unsuccessful"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        // returns true and the TwoPCPromise object that contains the appropriate message if the commit was successfull
         return new ResponseEntity<>(new TwoPCPromise(true, "TwoPC committed"), HttpStatus.OK);
     }
 }

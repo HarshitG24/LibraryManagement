@@ -11,6 +11,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 
+/**
+ * helper function that is used to send requests to other one port to other
+ */
 @Service
 public class RestService {
     private final RestTemplate restTemplate;
@@ -19,6 +22,13 @@ public class RestService {
         this.restTemplate = restTemplateBuilder.build();
     }
 
+    /**
+     *
+     * @param url of the port and the api to be called
+     * @param data data to be sent
+     * @return the output of the post
+     * it sends the post request to all the other ports
+     */
     public ResponseEntity<Object> post(String url, Object data) {
         HttpHeaders headers = new HttpHeaders();
         // set `content-type` header
@@ -48,6 +58,14 @@ public class RestService {
         return response.getBody();
     }
 
+    /**
+     *
+     * @param url url of the port
+     * @param data data to be sent
+     * @return the response
+     * sends the get request
+     */
+
     public ResponseEntity<Object> get(String url, Object data) {
         HttpHeaders headers = new HttpHeaders();
         // set `content-type` header
@@ -62,12 +80,5 @@ public class RestService {
         return restTemplate.getForEntity(url, Object.class);
     }
 
-    public String generateURL(String host, int port, String super_var,String var) {
-        return "http://"+host+":"+port+"/"+super_var+"/"+var;
-    }
-
-    public String generateURL(String host, int port,String var) {
-        return "http://"+host+":"+port+"/"+"/"+var;
-    }
 }
 
