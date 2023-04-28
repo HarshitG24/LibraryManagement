@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Controller
 public class TwoPCController {
-    private static final Logger logger = LoggerFactory.getLogger(ServerController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TwoPCController.class);
 
     @Autowired
     RestService restService;

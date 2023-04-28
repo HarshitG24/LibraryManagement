@@ -31,6 +31,10 @@ public class CartService {
   @Autowired
   CartBookInterface cartBookInterface;
 
+  /**
+   *
+   * @return return all the carts
+   */
   public List<CartDTO> getAllCarts() {
     List<Cart> carts = (List<Cart>) cartInterface.findAll();
     List<CartDTO> cartDTOs = new ArrayList<>();
@@ -43,6 +47,10 @@ public class CartService {
     return cartDTOs;
   }
 
+  /**
+   *
+   * @return ids of all the books inside the cart
+   */
   public List<CartBookId> getAllCartBooks() {
     List<CartBook> cartsBooks = (List<CartBook>) cartBookInterface.findAll();
     List<CartBookId> cartBookIds = new ArrayList<>();
@@ -52,10 +60,20 @@ public class CartService {
     return cartBookIds;
   }
 
+  /**
+   *
+   * @param cart cart object that contains username and the list of books
+   *  stores the cart object in the database
+   */
   public void createCart(Cart cart) {
     cartInterface.save(cart);
   }
 
+  /**
+   *
+   * @param username
+   * @return all the books inside the cart for the given username
+   */
   public List<Long> getAllBooksInCartByUsername(String username) {
     Optional<Cart> optionalCart = Optional.ofNullable(cartInterface.findByUsername(username));
     if (optionalCart.isPresent()) {
