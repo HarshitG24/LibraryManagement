@@ -45,6 +45,6 @@ Server: <pre>java -jar -Dserver.port=8081 target/distributed-systems-0.0.1-SNAPS
 
 Client: <pre>REACT_APP_SERVER_PORT=8081 npm start</pre>
 
-1.<b>port</b> is the port to connect to the remote server.
+1. <b>port</b> is the port to connect to the remote server.
 2. <b>backendPort</b> is the server port number you want to connect your client with.
 
