@@ -28,46 +28,72 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+/**
+ * The controller for paxos class
+ */
 public class PaxosController {
 
+  // Making an instance of logger class to log the activities in program flow
   private static final Logger logger = LoggerFactory.getLogger(PaxosController.class);
 
+  // timeout value
   private static final int AWAIT_TERMINATION_SECONDS = 10;
+
+  // size of thread pool used with executor object
   private static final int THREAD_POOL_SIZE = 10;
 
 
+  // to determine the current server port
   @Value("${server.port}")
   private int serverPort;
 
+  // to make request body and make post api calls
   @Autowired
   RestService restService;
 
+  // to manage all the nodes
   @Autowired
   NodeManager nodeManager;
 
   @Autowired
   NodeRegistry nodeRegistry;
 
+  // to count the number of nodes accepted promise in prepare phase
   AtomicInteger promiseAccepted = new AtomicInteger(0);
+
+  // to count the number of nodes accepted  in accept phase
   AtomicInteger nodesAccepted = new AtomicInteger(0);
 
+  // Instance of RicartAgrawalaHandler to complement paxos with distributed mutual exclusion
   private final RicartAgrawalaHandler ricartAgrawalaHandler;
+
+  // instance of VectorTimestampService to handle causal ordering of transactions
   private final VectorTimestampService vectorTimestampService;
 
 
-
+  /**
+   * Constructor for the class
+   * @param ricartAgrawalaHandler - Object of RicartAgrawalaHandler class used with vector timestamps and paxos
+   * @param vectorTimestampService - Object of VectorTimestampService class used with  paxos and ricart-agrawala
+   */
   @Autowired
   public PaxosController(RicartAgrawalaHandler ricartAgrawalaHandler, VectorTimestampService vectorTimestampService) {
     this.ricartAgrawalaHandler = ricartAgrawalaHandler;
     this.vectorTimestampService = vectorTimestampService;
   }
 
+  /**
+   * To initiate the preparse phase of paxos
+   * @param paxosTransaction - instance of PaxosTransaction class which contains the details such as transactionid, username  needed for paxos
+   * @return - ResponseEntity object with status code and promise object which contains if it was success and the message
+   */
     private ResponseEntity<Response> preparePhase(PaxosTransaction paxosTransaction) {
     logger.info("Initiating PAXOS Prepare");
     promiseAccepted.set(0); // Reset promiseAccepted to 0
     Set<String> allNodes = nodeRegistry.getActiveNodes();
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
+    // iterating all the nodes
     for (String url : allNodes) {
       executor.execute(() -> {
         LinkedHashMap<String, Object> receivedPromise = (LinkedHashMap<String, Object>) restService.post(url + "/paxos/prepare", paxosTransaction).getBody();
@@ -96,11 +122,18 @@ public class PaxosController {
     }
   }
 
+  /**
+   * The accept phase of paxos
+   * @param paxosTransaction - instance of PaxosTransaction class which contains the details such as transactionid, username  needed for paxos
+   * @return - ResponseEntity object with status code and promise object which contains if it was success and the message
+   */
   private ResponseEntity<Response> acceptPhase(PaxosTransaction paxosTransaction) {
     logger.info("Initiating PAXOS Accept");
     nodesAccepted.set(0); // Reset nodesAccepted to 0
     Set<String> allNodes = nodeRegistry.getActiveNodes();
     ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
+    // iterating all the active servers ports
     for (String url : allNodes) {
       executor.execute(() -> {
         long acceptedTID = (long)restService.post(url + "/paxos/accept", paxosTransaction).getBody();
@@ -126,6 +159,11 @@ public class PaxosController {
     }
   }
 
+  /**
+   * The learning phase of paxos
+   * @param paxosTransaction - instance of PaxosTransaction class which contains the details such as transactionid, username  needed for paxos
+   * @return - ResponseEntity object with status code and if it was success or not
+   */
   private ResponseEntity<Response> learnPhase(PaxosTransaction paxosTransaction) {
     logger.info("Initiating PAXOS Learn");
     Set<String> allNodes = nodeRegistry.getActiveNodes();
@@ -149,6 +187,10 @@ public class PaxosController {
     return new ResponseEntity<>(new Response(true, "Success"), HttpStatus.OK);
   }
 
+  /**
+   * Method to achieve distributed mutual exclusion using ricart agrawala and acquiring locks to enter critical section
+   * @param operation - The scenario under consideration such as checkout or delete and so on.
+   */
   private void requestLocksFromAllInstances(PaxosScenario operation) {
     logger.info("Initiating Ricart Agrawala request lock");
       Set<String> nodeAddresses = nodeRegistry.getActiveNodes();
@@ -185,6 +227,10 @@ public class PaxosController {
       }
   }
 
+  /**
+   * Method to release locks after using critical section
+   * @param operation - The scenario under consideration such as checkout or delete and so on.
+   */
   private void releaseLocksFromAllInstances(PaxosScenario operation) {
     logger.info("Initiating Ricart Agrawala Release lock phase");
       Set<String> nodeAddresses = nodeRegistry.getActiveNodes();
@@ -201,6 +247,11 @@ public class PaxosController {
               .forEach(reply -> vectorTimestampService.updateVectorTimestamps(operation.toString(), reply.getVectorTimestamp()));
   }
 
+  /**
+   * The method to starts paxos
+   * @param paxosTransaction - instance of PaxosTransaction class which contains the details such as transactionid, username  needed for paxos
+   * @return - ResponseEntity object with status code and if it was success or not
+   */
   public ResponseEntity<Response> propose(@RequestBody PaxosTransaction paxosTransaction) {
     ResponseEntity<Response> responseStatus;
     try {
