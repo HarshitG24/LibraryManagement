@@ -1,7 +1,7 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.twopc;
 
 /**
- * promise object that is contains the messages from all the phases in twoPC algorithm
+ * promise object that  contains the messages from all the phases in twoPC algorithm
  */
 public class TwoPCPromise {
 

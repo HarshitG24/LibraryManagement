@@ -1,5 +1,8 @@
 package com.example.distributedsystems.distributed.systems.model.user;
 
+/**
+ * object for storing the data from the client side for create user request
+ */
 public class CreateUserRequest {
   private String firstName;
   private String lastName;
@@ -13,6 +16,10 @@ public class CreateUserRequest {
   private String state;
   private String zipcode;
 
+  /**
+   *
+   * getters and setters
+   */
   public String getFirstName() {
     return firstName;
   }

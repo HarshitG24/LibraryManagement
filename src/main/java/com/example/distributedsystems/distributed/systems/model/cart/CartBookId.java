@@ -5,6 +5,7 @@ import java.io.Serializable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+
 @Embeddable
 public class CartBookId implements Serializable {
   @Column(name = "cart_id")
@@ -13,6 +14,11 @@ public class CartBookId implements Serializable {
   @Column(name = "book_id")
   private Long bookId;
 
+  /**
+   * stores the cart id and book id
+   * @param cartId
+   * @param bookId
+   */
   public CartBookId(Integer cartId, Long bookId) {
     this.cartId = cartId;
     this.bookId = bookId;

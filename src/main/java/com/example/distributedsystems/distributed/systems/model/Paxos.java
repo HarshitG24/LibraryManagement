@@ -3,6 +3,9 @@ package com.example.distributedsystems.distributed.systems.model;
 import com.example.distributedsystems.distributed.systems.model.transaction.Transaction;
 import jakarta.persistence.*;
 
+/**
+ * entity for storing the necessary ids for the paxos transaction
+ */
 @Entity
 public class Paxos {
 
@@ -16,11 +19,20 @@ public class Paxos {
 
     public Paxos(){}
 
+    /**
+     *
+     * @param minId the id for the paxos operation
+     * @param transaction the transaction object
+     */
     public Paxos(Long minId, Transaction transaction) {
         this.minId = minId;
         this.transaction = transaction;
     }
 
+    /**
+     * getter and setters
+     *
+     */
     public Long getMinId() {
         return minId;
     }
