@@ -1,6 +1,5 @@
 package com.example.distributedsystems.distributed.systems.dsalgo.twopc;
 
-import com.example.distributedsystems.distributed.systems.controller.ServerController;
 import com.example.distributedsystems.distributed.systems.coordinator.RestService;
 import com.example.distributedsystems.distributed.systems.model.user.User;
 import com.example.distributedsystems.distributed.systems.node.NodeRegistry;
@@ -20,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Controller
 public class TwoPCController {
-    private static final Logger logger = LoggerFactory.getLogger(ServerController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TwoPCController.class);
 
     @Autowired
     RestService restService;
@@ -66,8 +65,7 @@ public class TwoPCController {
             ackCount = 0;
 
             AtomicReference<String> failed_msg = new AtomicReference<>();
-//            TwoPCPromise promise;
-            // commit phase as consesnus acheived
+            // commit phase as consensus achieved
             executor = Executors.newFixedThreadPool(10);
             for(String a:ports){
                 executor.execute(() -> {
