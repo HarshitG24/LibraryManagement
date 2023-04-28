@@ -12,11 +12,34 @@ import java.util.List;
 
 import jakarta.transaction.Transactional;
 
+/**
+ * Interface for managing Transaction entities in the system.
+ */
 @Repository
 public interface TransactionInterface extends CrudRepository<Transaction, Long> {
+
+  /**
+   * Retrieves all transactions by a specified username.
+   *
+   * @param username The username to filter transactions by.
+   * @return A list of transactions by the specified username.
+   */
   List<Transaction> findAllByUsername(String username);
+
+  /**
+   * Retrieves a transaction by its transaction ID.
+   *
+   * @param transactionId The ID of the transaction.
+   * @return The transaction with the specified ID.
+   */
   Transaction getTransactionByTransactionId(Long transactionId);
 
+  /**
+   * Updates the book status in a specified transaction.
+   *
+   * @param transactionId The ID of the transaction.
+   * @param bookId The ID of the book to update the status.
+   */
   @Modifying
   @Transactional
   default void updateBookStatus(Long transactionId, Long bookId) {
@@ -25,6 +48,12 @@ public interface TransactionInterface extends CrudRepository<Transaction, Long> 
     save(transaction);
   }
 
+  /**
+   * Retrieves unreturned book IDs by a specified username.
+   *
+   * @param username The username to filter transactions by.
+   * @return A list of unreturned book IDs by the specified username.
+   */
   @Transactional
   default List<TransactionResponse> getUnreturnedBookIdsByUsername(String username) {
     List<Transaction> transactions = findAllByUsername(username);
@@ -40,6 +69,12 @@ public interface TransactionInterface extends CrudRepository<Transaction, Long> 
     return bookIsbnsByTransaction;
   }
 
+  /**
+   * Retrieves returned book IDs by a specified username.
+   *
+   * @param username The username to filter transactions by.
+   * @return A list of returned book IDs by the specified username.
+   */
   @Transactional
   default List<TransactionResponse> getReturnedBookIdsByUsername(String username) {
     List<Transaction> transactions = findAllByUsername(username);

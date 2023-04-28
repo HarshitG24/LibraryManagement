@@ -16,9 +16,7 @@ import com.example.distributedsystems.distributed.systems.repository.BookInterfa
 import com.example.distributedsystems.distributed.systems.repository.CartInterface;
 import com.example.distributedsystems.distributed.systems.repository.TransactionInterface;
 import com.example.distributedsystems.distributed.systems.repository.UserInterface;
-import com.example.distributedsystems.distributed.systems.service.CartBookInterface;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hazelcast.core.HazelcastInstance;
+import com.example.distributedsystems.distributed.systems.repository.CartBookInterface;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
