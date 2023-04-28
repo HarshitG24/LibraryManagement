@@ -23,15 +23,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * The class to expose the methods associated with books to frontend
+ */
 @RestController
 @CrossOrigin(origins = {"*"})
 @RequestMapping("/book")
 public class BookController extends PaxosController {
+
+  // Making an instance of logger class to log the activities in program flow
   private static final Logger logger = LoggerFactory.getLogger(BookController.class);
 
+  // to use methods in book repository
   @Autowired
   private BookService bookService;
 
+  /**
+   * Constructor for the class
+   * @param ricartAgrawalaHandler - Object of RicartAgrawalaHandler class used with vector timestamps and paxos
+   * @param vectorTimestampService - Object of VectorTimestampService class used with  paxos and ricart-agrawala
+   */
   @Autowired
   public BookController(RicartAgrawalaHandler ricartAgrawalaHandler, VectorTimestampService vectorTimestampService) {
     super(ricartAgrawalaHandler, vectorTimestampService);
@@ -39,6 +50,10 @@ public class BookController extends PaxosController {
     System.out.println("VCT:" + vectorTimestampService);
   }
 
+  /**
+   * Method to return all the books from database
+   * @return - ResponseEntity object with status code and list of all books
+   */
   @GetMapping("")
   public ResponseEntity<List<Book>> getAllBooks() {
     logger.info("Get all books request received.");
@@ -46,6 +61,11 @@ public class BookController extends PaxosController {
     return new ResponseEntity<>(books, HttpStatus.OK);
   }
 
+  /**
+   * Method to fetch book by isbn
+   * @param isbn - the id of the book which we need to fetch
+   * @return - ResponseEntity object with status code and the books
+   */
   @GetMapping("/{isbn}")
   public ResponseEntity<Book> getBookByIsbn(@PathVariable("isbn") Long isbn) {
     logger.info("Get book by ISBN request received. ISBN: " + isbn);
@@ -53,6 +73,11 @@ public class BookController extends PaxosController {
     return new ResponseEntity<>(book, HttpStatus.OK);
   }
 
+  /**
+   * Method to add book to database
+   * @param book - The details of the book in form of Book class instance, which needs to be added to database
+   * @return - ResponseEntity object with status code and the books
+   */
   @PostMapping("/createBook")
   public ResponseEntity<Book> createBook(@RequestBody Book book) {
     logger.info("Create book request received. Book: " + book);
@@ -60,6 +85,12 @@ public class BookController extends PaxosController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
+  /**
+   * Method to update inventory of book depending upon if it was loan or returned
+   * @param isbn - the book for which we need to update inventory
+   * @param operation - it can be loan or return
+   * @return - ResponseEntity object with status code
+   */
   @PutMapping("/{isbn}/{operation}")
   public ResponseEntity<Object> updateBookInventoryByIsbn(
           @PathVariable("isbn") Long isbn, @RequestParam("operation") String operation) {
@@ -72,16 +103,4 @@ public class BookController extends PaxosController {
     }
   }
 
-//  @PostMapping("/testPaxos")
-//  public ResponseEntity<Object> testBook(@RequestBody Book book) {
-////    bookService.createBook(book);
-//    List<Long> books = new ArrayList<>();
-//    books.add(123456789012345L);
-//    books.add(123456789012346L);
-//
-//    PaxosTransaction t = new PaxosTransaction(123456789012345L, 123L);
-//    propose(t);
-////    return restService.post(restService.generateURL("localhost", 8081, "prepare"), t);
-//    return new ResponseEntity<>(HttpStatus.OK);
-//  }
 }
